@@ -1,0 +1,100 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+	* {
+		box-sizing: border-box;
+	}
+	html {
+		scroll-behavior: smooth;
+	}
+	body {
+		background-color: #0a0c0f;
+		color: #e8eaf0;
+		font-family: 'DM Sans', sans-serif;
+		-webkit-font-smoothing: antialiased;
+	}
+	::-webkit-scrollbar {
+		width: 8px;
+		height: 8px;
+	}
+	::-webkit-scrollbar-track {
+		background: #111318;
+	}
+	::-webkit-scrollbar-thumb {
+		background: #2e3545;
+		border-radius: 4px;
+	}
+	::-webkit-scrollbar-thumb:hover {
+		background: #c9a84c;
+	}
+}
+
+@layer components {
+	.gold-text {
+		background: linear-gradient(135deg, #c9a84c, #e8c96a);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+	}
+
+	.card {
+		@apply bg-surface rounded-2xl border border-dark-400/50 shadow-card;
+	}
+
+	.card-hover {
+		@apply transition-all duration-300 hover:shadow-card-hover hover:border-brand-gold/30;
+	}
+
+	.btn-gold {
+		@apply bg-brand-gold hover:bg-brand-gold-light text-dark-900 font-semibold px-6 py-3 rounded-xl transition-all duration-200 shadow-gold hover:shadow-gold-lg active:scale-95;
+	}
+
+	.btn-outline {
+		@apply border border-dark-400 hover:border-brand-gold text-gray-300 hover:text-brand-gold px-6 py-3 rounded-xl transition-all duration-200;
+	}
+
+	.btn-secondary {
+		@apply bg-dark-600 hover:bg-dark-500 text-gray-300 px-6 py-3 rounded-xl transition-all duration-200;
+	}
+
+	.input {
+		@apply w-full bg-dark-600 border border-dark-400 focus:border-brand-gold text-gray-100 placeholder-gray-500 rounded-xl px-4 py-3 outline-none transition-all duration-200 focus:ring-1 focus:ring-brand-gold/30;
+	}
+
+	.page-enter {
+		@apply animate-in fade-in duration-300;
+	}
+
+	.heading-1 {
+		@apply text-4xl md:text-5xl font-display font-bold text-white;
+	}
+
+	.heading-2 {
+		@apply text-3xl md:text-4xl font-display font-bold text-white;
+	}
+
+	.heading-3 {
+		@apply text-2xl font-display font-bold text-white;
+	}
+
+	.label {
+		@apply block text-sm font-semibold text-gray-300 mb-2;
+	}
+}
+
+@keyframes slideUp {
+	from {
+		opacity: 0;
+		transform: translateY(20px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.slide-up {
+	animation: slideUp 0.4s ease-out;
+}
