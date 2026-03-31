@@ -6,7 +6,8 @@ const connectDB = async () => {
     console.log(`✅ MongoDB connected: ${conn.connection.host}`)
   } catch (error) {
     console.error(`❌ MongoDB connection error: ${error.message}`)
-    console.log('\n💡 Tip: Make sure MongoDB is running locally OR update MONGODB_URI in .env\n')
+    console.log('\n💡 Tip: Make sure MongoDB is running locally OR update MONGODB_URI in .env')
+    console.log('   MongoDB Atlas free tier: https://www.mongodb.com/cloud/atlas\n')
     process.exit(1)
   }
 }
