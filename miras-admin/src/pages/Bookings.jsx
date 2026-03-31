@@ -31,8 +31,8 @@ export default function Bookings() {
         bookingsAPI.getAll({ status: filter !== 'all' ? filter : undefined }),
         carsAPI.getAll({ limit: 100 }),
       ])
-      setBookings(bRes.data?.bookings || bRes.data || [])
-      setCars(cRes.data?.cars || cRes.data || [])
+      setBookings(bRes.data?.data || [])
+      setCars(cRes.data?.data || [])
     } catch { toast.error('Failed to load bookings') }
     finally { setLoading(false) }
   }

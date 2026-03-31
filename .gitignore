@@ -1,18 +1,11 @@
-cat > .gitignore << 'EOF'
-# Windows reserved names
-nul
-NUL
-nul.*
-NUL.*
-
 # Dependencies
 node_modules/
 package-lock.json
 
-# Environment files (uncomment below to ignore, but user wants them tracked)
-# .env
-# .env.local
-# .env.*.local
+# Environment files
+.env
+.env.local
+.env.*.local
 
 # Build outputs
 dist/
@@ -32,4 +25,6 @@ Thumbs.db
 # Temporary files
 *.tmp
 *.temp
-EOF
+
+# Uploaded files (admin uploads)
+uploads/

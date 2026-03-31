@@ -21,7 +21,7 @@ export default function Cars() {
   const fetchCars = async () => {
     try {
       const res = await carsAPI.getAll({ category: category !== 'All' ? category : undefined })
-      setCars(res.data?.cars || res.data || [])
+      setCars(res.data?.data || [])
     } catch {
       toast.error('Failed to load cars')
     } finally {

@@ -1,6 +1,38 @@
 const express  = require('express')
 const router   = express.Router()
+const path     = require('path')
+const fs       = require('fs')
+const multer   = require('multer')
 const { protect } = require('../middleware/auth')
+
+// ─── Local file storage ──────────────────────────────────────────────────────
+const uploadsDir = path.join(__dirname, '..', 'uploads')
+if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true })
+
+const localStorage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, uploadsDir),
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname)
+    cb(null, `${Date.now()}-${Math.round(Math.random() * 1e9)}${ext}`)
+  }
+})
+const localUpload = multer({
+  storage: localStorage,
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
+  fileFilter: (req, file, cb) => {
+    const allowed = /jpeg|jpg|png|webp|gif/
+    const ext = allowed.test(path.extname(file.originalname).toLowerCase())
+    const mime = allowed.test(file.mimetype)
+    cb(null, ext && mime)
+  }
+})
+
+// POST /api/upload/local  (admin – local file upload)
+router.post('/local', protect, localUpload.single('image'), (req, res) => {
+  if (!req.file) return res.status(400).json({ success: false, error: 'No image file provided' })
+  const url = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`
+  res.json({ success: true, url })
+})
 
 // POST /api/upload  (admin)
 router.post('/', protect, async (req, res) => {

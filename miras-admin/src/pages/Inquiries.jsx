@@ -24,7 +24,7 @@ export default function Inquiries() {
     setLoading(true)
     try {
       const res = await inquiriesAPI.getAll({ status: status !== 'all' ? status : undefined })
-      setInquiries(res.data?.inquiries || res.data || [])
+      setInquiries(res.data?.data || [])
     } catch { toast.error('Failed to load inquiries') }
     finally { setLoading(false) }
   }

@@ -8,6 +8,7 @@ export function NotificationProvider({ children }) {
   const [notifications, setNotifications] = useState([])
   const [unreadCount, setUnreadCount] = useState(0)
   const prevInquiryCount = useRef(null)
+  const isAuthenticated = !!localStorage.getItem('miras_token')
 
   const checkForNew = async () => {
     try {
@@ -41,10 +42,11 @@ export function NotificationProvider({ children }) {
   const clearAll = () => { setNotifications([]); setUnreadCount(0) }
 
   useEffect(() => {
+    if (!isAuthenticated) return
     checkForNew()
     const interval = setInterval(checkForNew, 30000)
     return () => clearInterval(interval)
-  }, [])
+  }, [isAuthenticated])
 
   return (
     <NotificationContext.Provider value={{ notifications, unreadCount, markAllRead, clearAll, addNotification }}>

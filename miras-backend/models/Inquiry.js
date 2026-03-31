@@ -9,7 +9,7 @@ const InquirySchema = new mongoose.Schema({
   pickupDate:    { type: Date },
   dropoffDate:   { type: Date },
   message:       { type: String },
-  status:        { type: String, enum: ['New','Contacted','Confirmed','Completed','Cancelled'], default: 'New' },
+  status:        { type: String, enum: ['new','read','replied','closed'], default: 'new' },
   internalNotes: { type: String },
   source:        { type: String, enum: ['contact','car-page','booking'], default: 'contact' },
   isRead:        { type: Boolean, default: false },

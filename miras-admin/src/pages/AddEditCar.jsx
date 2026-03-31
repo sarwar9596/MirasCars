@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import { carsAPI } from '../utils/api';
 import {
 	ArrowLeft,
@@ -7,8 +8,28 @@ import {
 	X,
 	Plus,
 	AlertCircle,
+	Image,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+
+const api = axios.create({
+	baseURL: 'http://localhost:5000/api',
+	timeout: 30000,
+});
+api.interceptors.request.use(config => {
+	const token = localStorage.getItem('miras_token');
+	if (token) config.headers.Authorization = `Bearer ${token}`;
+	return config;
+});
+
+async function uploadImage(file) {
+	const formData = new FormData();
+	formData.append('image', file);
+	const res = await api.post('/upload/local', formData, {
+		headers: { 'Content-Type': 'multipart/form-data' },
+	});
+	return res.data.url;
+}
 
 const CATEGORIES = [
 	'SUV',
@@ -59,7 +80,7 @@ export default function AddEditCar() {
 		carsAPI
 			.getById(id)
 			.then((res) => {
-				const d = res.data?.car || res.data;
+				const d = res.data?.data || res.data;
 				const imgs = Array.isArray(d.images)
 					? [...d.images]
 					: [d.image || '', '', '', '', '', ''];
@@ -378,45 +399,18 @@ export default function AddEditCar() {
 						Car Photos
 					</h2>
 					<p className='text-gray-500 text-sm mb-5'>
-						Add up to 6 image URLs (Cloudinary, Unsplash, or direct
-						links)
+						Upload images from your device — up to 6 photos
 					</p>
-					<div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
+					<div className='grid grid-cols-2 md:grid-cols-3 gap-4'>
 						{form.images.map((img, i) => (
-							<div key={i}>
-								<label className='label'>
-									Photo {i + 1}
-									{i === 0 ? ' (Main)' : ''}
-								</label>
-								<div className='relative'>
-									<input
-										value={img}
-										onChange={(e) => setImg(i, e.target.value)}
-										placeholder='https://res.cloudinary.com/...'
-										className='input pr-10'
-									/>
-									{img && (
-										<button
-											type='button'
-											onClick={() => setImg(i, '')}
-											className='absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-red-400'>
-											<X size={14} />
-										</button>
-									)}
-								</div>
-								{img && (
-									<div className='mt-2 h-28 rounded-lg overflow-hidden bg-dark-700'>
-										<img
-											src={img}
-											alt=''
-											className='w-full h-full object-cover'
-											onError={(e) => {
-												e.target.style.display = 'none';
-											}}
-										/>
-									</div>
-								)}
-							</div>
+							<ImageSlot
+								key={i}
+								img={img}
+								label={i === 0 ? 'Main Photo' : `Photo ${i + 1}`}
+								onUpload={(url) => setImg(i, url)}
+								onRemove={() => setImg(i, '')}
+								isFirst={i === 0}
+							/>
 						))}
 					</div>
 				</div>
@@ -528,6 +522,80 @@ export default function AddEditCar() {
 					</button>
 				</div>
 			</form>
+		</div>
+	);
+}
+
+function ImageSlot({ img, label, onUpload, onRemove, isFirst }) {
+	const [uploading, setUploading] = useState(false);
+	const inputRef = useRef(null);
+
+	const handleFile = async (e) => {
+		const file = e.target.files?.[0];
+		if (!file) return;
+		setUploading(true);
+		try {
+			const url = await uploadImage(file);
+			onUpload(url);
+		} catch {
+			toast.error('Upload failed — try a smaller image');
+		} finally {
+			setUploading(false);
+			e.target.value = '';
+		}
+	};
+
+	return (
+		<div>
+			<label className='label'>
+				{label}
+				{isFirst ? ' *' : ''}
+			</label>
+			<div className='relative'>
+				<input
+					ref={inputRef}
+					type='file'
+					accept='image/jpeg,image/png,image/webp,image/gif'
+					onChange={handleFile}
+					className='hidden'
+				/>
+				{uploading ? (
+					<div className='input h-28 flex items-center justify-center gap-2 text-brand-gold'>
+						<div className='w-4 h-4 border-2 border-brand-gold/30 border-t-brand-gold rounded-full animate-spin' />
+						<span className='text-sm'>Uploading…</span>
+					</div>
+				) : img ? (
+					<div className='relative h-28 rounded-lg overflow-hidden bg-dark-700'>
+						<img src={img} alt={label} className='w-full h-full object-cover' />
+						<div className='absolute inset-0 bg-black/0 hover:bg-black/40 transition-colors flex items-center justify-center'>
+							<div className='flex gap-2 opacity-0 hover:opacity-100 transition-opacity'>
+								<button
+									type='button'
+									onClick={() => inputRef.current?.click()}
+									className='w-8 h-8 rounded-lg bg-dark-800/90 border border-dark-400 flex items-center justify-center text-gray-300 hover:text-brand-gold hover:border-brand-gold/50 transition-colors'
+									title='Replace image'>
+									<Upload size={13} />
+								</button>
+								<button
+									type='button'
+									onClick={onRemove}
+									className='w-8 h-8 rounded-lg bg-dark-800/90 border border-dark-400 flex items-center justify-center text-gray-300 hover:text-red-400 hover:border-red-500/50 transition-colors'
+									title='Remove image'>
+									<X size={13} />
+								</button>
+							</div>
+						</div>
+					</div>
+				) : (
+					<button
+						type='button'
+						onClick={() => inputRef.current?.click()}
+						className='input h-28 flex flex-col items-center justify-center gap-2 text-gray-500 hover:text-brand-gold hover:border-brand-gold/40 cursor-pointer transition-colors'>
+						<Image size={20} />
+						<span className='text-xs'>Click to upload</span>
+					</button>
+				)}
+			</div>
 		</div>
 	);
 }
