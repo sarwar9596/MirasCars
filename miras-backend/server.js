@@ -21,6 +21,7 @@ app.use(morgan('dev'))
 // Routes
 app.use('/api/auth',         require('./routes/auth'))
 app.use('/api/cars',         require('./routes/cars'))
+app.use('/api/bookings',     require('./routes/bookings'))
 app.use('/api/inquiries',    require('./routes/inquiries'))
 app.use('/api/blog',         require('./routes/blog'))
 app.use('/api/testimonials', require('./routes/testimonials'))

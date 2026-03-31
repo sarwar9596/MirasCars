@@ -45,7 +45,7 @@ export const inquiriesAPI = {
   delete: (id) => api.delete(`/inquiries/${id}`),
 }
 
-// ─── Bookings / Orders ──────────────────────────────────────────────────────
+// ─── Bookings ──────────────────────────────────────────────────────────────
 export const bookingsAPI = {
   getAll: (params) => api.get('/bookings', { params }),
   getById: (id) => api.get(`/bookings/${id}`),

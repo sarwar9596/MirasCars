@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { analyticsAPI, inquiriesAPI, bookingsAPI } from '../utils/api'
+import { analyticsAPI, inquiriesAPI } from '../utils/api'
 import { Car, MessageSquare, Calendar, TrendingUp, ArrowUpRight, ArrowRight, Clock } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
+import { useAuth } from '../context/AuthContext'
 
 function StatCard({ icon: Icon, label, value, delta, color, to }) {
   const colorMap = {
@@ -59,29 +60,30 @@ function RecentItem({ icon, title, sub, time, badge, badgeColor }) {
 }
 
 export default function Dashboard() {
+  const { isAuthenticated } = useAuth()
   const [stats, setStats] = useState(null)
   const [recentInquiries, setRecentInquiries] = useState([])
-  const [recentBookings, setRecentBookings] = useState([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    if (!isAuthenticated) {
+      setLoading(false)
+      return
+    }
     const load = async () => {
       try {
-        const [dashRes, inqRes, bookRes] = await Promise.all([
+        const [dashRes, inqRes] = await Promise.all([
           analyticsAPI.getDashboard().catch(() => ({ data: {} })),
-          inquiriesAPI.getAll({ limit: 5, sort: '-createdAt' }).catch(() => ({ data: [] })),
-          bookingsAPI.getAll({ limit: 5, sort: '-createdAt' }).catch(() => ({ data: [] })),
+          inquiriesAPI.getAll({ limit: 5 }).catch(() => ({ data: [] })),
         ])
         setStats(dashRes.data)
-        const inqs = inqRes.data?.inquiries || inqRes.data || []
-        const books = bookRes.data?.bookings || bookRes.data || []
+        const inqs = inqRes.data?.data || inqRes.data || []
         setRecentInquiries(Array.isArray(inqs) ? inqs.slice(0, 5) : [])
-        setRecentBookings(Array.isArray(books) ? books.slice(0, 5) : [])
       } catch {}
       setLoading(false)
     }
     load()
-  }, [])
+  }, [isAuthenticated])
 
   if (loading) return (
     <div className="flex items-center justify-center h-64">
@@ -154,27 +156,9 @@ export default function Dashboard() {
           ))}
         </div>
 
-        {/* Recent Bookings */}
-        <div className="card p-5">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-white">Recent Bookings</h3>
-            <Link to="/bookings" className="text-xs text-brand-gold hover:underline flex items-center gap-1">
-              View all <ArrowRight size={11} />
-            </Link>
-          </div>
-          {recentBookings.length === 0 ? (
-            <p className="text-gray-600 text-sm text-center py-6">No bookings yet</p>
-          ) : recentBookings.map((book, i) => (
-            <RecentItem
-              key={book._id || i}
-              icon="🚗"
-              title={book.customerName || book.name || 'Customer'}
-              sub={book.carName || book.car?.name || `${book.days || ''} days`}
-              time={book.createdAt ? formatDistanceToNow(new Date(book.createdAt), { addSuffix: true }) : ''}
-              badge={book.status || 'pending'}
-              badgeColor={book.status || 'pending'}
-            />
-          ))}
+        {/* Placeholder card */}
+        <div className="card p-5 flex items-center justify-center">
+          <p className="text-gray-600 text-sm">More features coming soon</p>
         </div>
       </div>
     </div>
