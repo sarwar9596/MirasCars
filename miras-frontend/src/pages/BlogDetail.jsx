@@ -10,17 +10,22 @@ export default function BlogDetail() {
 	const navigate = useNavigate();
 	const [blog, setBlog] = useState(null);
 	const [relatedCars, setRelatedCars] = useState([]);
+	const [moreBlogs, setMoreBlogs] = useState([]);
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
-				const [blogRes, carsRes] = await Promise.all([
+				const [blogRes, carsRes, blogsListRes] = await Promise.all([
 					blogsAPI.getBySlug(slug),
 					carsAPI.getAll({ featured: true }),
+					blogsAPI.getAll({ limit: 4 }),
 				]);
 				setBlog(blogRes.data?.data || blogRes.data);
 				setRelatedCars((carsRes.data?.data || []).slice(0, 3));
+				// Exclude current blog from "more articles"
+				const all = blogsListRes.data?.data || [];
+				setMoreBlogs(all.filter(b => b.slug !== slug).slice(0, 3));
 			} catch (err) {
 				toast.error('Blog post not found');
 				navigate('/blogs');
@@ -111,9 +116,10 @@ export default function BlogDetail() {
 
 				{/* Content */}
 				<div className='prose prose-invert max-w-none mb-16'>
-					<div className='text-gray-300 leading-relaxed whitespace-pre-wrap text-lg'>
-						{blog.content}
-					</div>
+					<div
+						className='text-gray-300 leading-relaxed text-lg blog-content'
+						dangerouslySetInnerHTML={{ __html: blog.content }}
+					/>
 				</div>
 
 				{/* Tags */}
@@ -190,30 +196,40 @@ export default function BlogDetail() {
 			</div>
 
 			{/* Recommended Articles */}
-			<section className='py-16 bg-dark-800'>
-				<div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
-					<h2 className='heading-3 mb-8'>More Articles</h2>
-					<div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
-						{[1, 2, 3].map((i) => (
-							<Link
-								key={i}
-								to='/blogs'
-								className='card card-hover p-6 group'>
-								<div className='h-40 bg-dark-700 rounded-lg mb-4 group-hover:opacity-80 transition-opacity'></div>
-								<p className='text-brand-gold text-xs font-semibold mb-2'>
-									Travel Guide
-								</p>
-								<h3 className='text-lg font-semibold text-white mb-2 line-clamp-2'>
-									Explore More Kashmir Adventures
-								</h3>
-								<p className='text-gray-400 text-sm'>
-									Discover amazing travel stories and tips...
-								</p>
-							</Link>
-						))}
+			{moreBlogs.length > 0 && (
+				<section className='py-16 bg-dark-800'>
+					<div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
+						<h2 className='heading-3 mb-8'>More Articles</h2>
+						<div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
+							{moreBlogs.map((b) => (
+								<Link
+									key={b._id}
+									to={`/blog/${b.slug}`}
+									className='card card-hover p-6 group'>
+									{b.featuredImage && (
+										<div className='h-40 bg-dark-700 rounded-lg mb-4 overflow-hidden'>
+											<img
+												src={b.featuredImage}
+												alt={b.title}
+												className='w-full h-full object-cover group-hover:scale-105 transition-transform duration-300'
+											/>
+										</div>
+									)}
+									<p className='text-brand-gold text-xs font-semibold mb-2'>
+										{b.category || 'Travel Guide'}
+									</p>
+									<h3 className='text-lg font-semibold text-white mb-2 line-clamp-2'>
+										{b.title}
+									</h3>
+									<p className='text-gray-400 text-sm line-clamp-2'>
+										{b.excerpt}
+									</p>
+								</Link>
+							))}
+						</div>
 					</div>
-				</div>
-			</section>
+				</section>
+			)}
 		</div>
 	);
 }

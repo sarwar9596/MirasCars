@@ -18,7 +18,9 @@
       "Read(//c//**)",
       "Bash(curl --version)",
       "Bash(wget --version)",
-      "Bash(git config:*)"
+      "Bash(git config:*)",
+      "Bash(git push:*)",
+      "Bash(node seed.js)"
     ]
   }
 }

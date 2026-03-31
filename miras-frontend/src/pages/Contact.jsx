@@ -1,19 +1,26 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { inquiriesAPI } from '../utils/api';
 import { Mail, MapPin, Phone, MessageCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function Contact() {
+	const [searchParams] = useSearchParams();
 	const [form, setForm] = useState({
 		name: '',
 		email: '',
 		phone: '',
-		carModel: '',
-		startDate: '',
-		endDate: '',
+		carName: '',
+		pickupDate: '',
+		dropoffDate: '',
 		message: '',
 	});
 	const [loading, setLoading] = useState(false);
+
+	useEffect(() => {
+		const car = searchParams.get('car');
+		if (car) setForm(f => ({ ...f, carName: car }));
+	}, [searchParams]);
 
 	const handleChange = (e) => {
 		const { name, value } = e.target;
@@ -22,22 +29,25 @@ export default function Contact() {
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-		if (!form.name || !form.email || !form.phone) {
-			toast.error('Please fill in required fields');
+		if (!form.name || !form.phone) {
+			toast.error('Please fill in your name and phone number');
 			return;
 		}
 
 		setLoading(true);
 		try {
-			await inquiriesAPI.create(form);
+			await inquiriesAPI.create({
+				...form,
+				source: 'contact',
+			});
 			toast.success("Inquiry sent! We'll contact you soon.");
 			setForm({
 				name: '',
 				email: '',
 				phone: '',
-				carModel: '',
-				startDate: '',
-				endDate: '',
+				carName: searchParams.get('car') || '',
+				pickupDate: '',
+				dropoffDate: '',
 				message: '',
 			});
 		} catch (err) {
@@ -186,17 +196,14 @@ export default function Contact() {
 										<label className='label'>
 											Car Model (Optional)
 										</label>
-										<select
-											name='carModel'
-											value={form.carModel}
+										<input
+											type='text'
+											name='carName'
+											value={form.carName}
 											onChange={handleChange}
-											className='input'>
-											<option value=''>Choose a car...</option>
-											<option value='hatchback'>Hatchback</option>
-											<option value='sedan'>Sedan</option>
-											<option value='suv'>SUV</option>
-											<option value='luxury'>Luxury</option>
-										</select>
+											placeholder='e.g. Mahindra Thar'
+											className='input'
+										/>
 									</div>
 								</div>
 
@@ -205,8 +212,8 @@ export default function Contact() {
 										<label className='label'>Start Date</label>
 										<input
 											type='date'
-											name='startDate'
-											value={form.startDate}
+											name='pickupDate'
+											value={form.pickupDate}
 											onChange={handleChange}
 											className='input'
 										/>
@@ -215,8 +222,8 @@ export default function Contact() {
 										<label className='label'>End Date</label>
 										<input
 											type='date'
-											name='endDate'
-											value={form.endDate}
+											name='dropoffDate'
+											value={form.dropoffDate}
 											onChange={handleChange}
 											className='input'
 										/>

@@ -9,10 +9,10 @@ NUL.*
 node_modules/
 package-lock.json
 
-# Environment files
-.env
-.env.local
-.env.*.local
+# Environment files (uncomment below to ignore, but user wants them tracked)
+# .env
+# .env.local
+# .env.*.local
 
 # Build outputs
 dist/

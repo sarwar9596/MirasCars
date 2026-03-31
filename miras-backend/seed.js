@@ -1,16 +1,32 @@
 require('dotenv').config()
 const mongoose = require('mongoose')
-const connectDB = require('./config/db')
 
-// Uncomment to use in-memory MongoDB for seeding (requires mongodb-memory-server):
-// async function startMemoryMongo() {
-//   const { MongoMemoryServer } = require('mongodb-memory-server')
-//   const mongoServer = await MongoMemoryServer.create()
-//   const uri = mongoServer.getUri()
-//   console.log('🗄️  Starting in-memory MongoDB for seeding...')
-//   await mongoose.connect(uri)
-//   return mongoServer
-// }
+async function seed() {
+  let mongoServer
+
+  // Try real MongoDB first
+  try {
+    console.log('\n🌱 Starting database seed...\n')
+    await mongoose.connect(process.env.MONGODB_URI)
+    console.log(`✅ Connected to MongoDB: ${mongoose.connection.host}`)
+  } catch (err) {
+    // Fallback to in-memory MongoDB
+    console.log(`\n⚠️  Real MongoDB not available (${err.message})`)
+    console.log('🗄️  Falling back to in-memory MongoDB...\n')
+    try {
+      const { MongoMemoryServer } = require('mongodb-memory-server')
+      mongoServer = await MongoMemoryServer.create()
+      await mongoose.connect(mongoServer.getUri())
+      console.log('✅ Connected to in-memory MongoDB')
+    } catch (memErr) {
+      console.error(`❌ In-memory MongoDB failed: ${memErr.message}`)
+      console.error('\n💡 Please install MongoDB locally or use MongoDB Atlas.')
+      console.error('   Atlas free tier: https://www.mongodb.com/cloud/atlas\n')
+      process.exit(1)
+    }
+  }
+
+  try {
 
 const Car         = require('./models/Car')
 const BlogPost    = require('./models/BlogPost')
@@ -558,22 +574,6 @@ const demoInquiries = [
   { name: 'Amit Verma', phone: '9432109876', carName: 'Toyota Fortuner', pickupDate: new Date(Date.now() + 14*86400000), dropoffDate: new Date(Date.now() + 19*86400000), message: 'Corporate trip, need the best SUV available. Budget not an issue.', status: 'Confirmed', source: 'booking', isRead: true },
   { name: 'Pooja & Manish', phone: '9210987654', email: 'manish.p@gmail.com', carName: 'Maruti Dzire', pickupDate: new Date(Date.now() - 3*86400000), dropoffDate: new Date(Date.now() - 1*86400000), message: 'Completed trip. Wonderful experience!', status: 'Completed', source: 'car-page', isRead: true },
 ]
-
-async function seed() {
-  let mongoServer
-  try {
-    // Try real MongoDB first
-    await connectDB()
-    console.log('\n🌱 Starting database seed...\n')
-  } catch (err) {
-    // Fallback to in-memory MongoDB
-    console.log('\n⚠️  Real MongoDB not available, using in-memory server...\n')
-    const { MongoMemoryServer } = require('mongodb-memory-server')
-    mongoServer = await MongoMemoryServer.create()
-    await mongoose.connect(mongoServer.getUri())
-    console.log('🌱 Starting database seed (in-memory)...\n')
-  }
-
     // Clear existing data
     await Car.deleteMany({})
     await BlogPost.deleteMany({})
