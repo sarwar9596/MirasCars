@@ -136,6 +136,8 @@ export default function AddEditCar() {
 			const payload = {
 				...form,
 				images: form.images.filter(Boolean),
+				color: form.color || undefined,
+				features: form.features?.length ? form.features : undefined,
 				pricePerDay: Number(form.pricePerDay),
 				pricePerWeek: form.pricePerWeek
 					? Number(form.pricePerWeek)
@@ -346,7 +348,7 @@ export default function AddEditCar() {
 							<input
 								value={form.mileage}
 								onChange={(e) => set('mileage', e.target.value)}
-								placeholder='e.g. 18 kmpl'
+								placeholder='e.g. 18'
 								className='input'
 							/>
 						</div>

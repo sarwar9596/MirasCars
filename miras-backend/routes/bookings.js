@@ -1,6 +1,7 @@
 const express  = require('express')
 const router   = express.Router()
 const Booking  = require('../models/Booking')
+const Car      = require('../models/Car')
 const { protect } = require('../middleware/auth')
 
 // GET /api/bookings  (admin)
@@ -27,6 +28,9 @@ router.get('/:id', protect, async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const booking = await Booking.create(req.body)
+    if (booking.carId) {
+      await Car.findByIdAndUpdate(booking.carId, { $inc: { totalBookings: 1 } })
+    }
     res.status(201).json({ success: true, data: booking })
   } catch (err) { res.status(400).json({ success: false, error: err.message }) }
 })

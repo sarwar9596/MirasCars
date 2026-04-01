@@ -18,15 +18,14 @@ export default function BlogDetail() {
 			try {
 				const [blogRes, carsRes, blogsListRes] = await Promise.all([
 					blogsAPI.getBySlug(slug),
-					carsAPI.getAll({ featured: true }),
+					carsAPI.getAll({ limit: 6 }),
 					blogsAPI.getAll({ limit: 4 }),
 				]);
 				setBlog(blogRes.data?.data || blogRes.data);
 				setRelatedCars((carsRes.data?.data || []).slice(0, 3));
-				// Exclude current blog from "more articles"
 				const all = blogsListRes.data?.data || [];
 				setMoreBlogs(all.filter(b => b.slug !== slug).slice(0, 3));
-			} catch (err) {
+			} catch {
 				toast.error('Blog post not found');
 				navigate('/blogs');
 			} finally {
@@ -38,8 +37,8 @@ export default function BlogDetail() {
 
 	if (loading) {
 		return (
-			<div className='min-h-screen flex items-center justify-center bg-dark-900'>
-				<div className='w-12 h-12 border-3 border-brand-gold/30 border-t-brand-gold rounded-full animate-spin'></div>
+			<div className='min-h-screen flex items-center justify-center' style={{ background: '#F8F9FA' }}>
+				<div className='w-12 h-12 border-4 rounded-full animate-spin' style={{ borderColor: 'rgba(47,164,169,0.2)', borderTopColor: '#2FA4A9' }} />
 			</div>
 		);
 	}
@@ -47,92 +46,68 @@ export default function BlogDetail() {
 	if (!blog) return null;
 
 	return (
-		<div className='min-h-screen bg-dark-900'>
-			{/* Header */}
-			<div className='bg-dark-800 border-b border-dark-400/30 py-4 sticky top-0 z-40'>
-				<div className='max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between'>
-					<button
-						onClick={() => navigate('/blogs')}
-						className='flex items-center gap-2 text-gray-400 hover:text-brand-gold transition-colors text-sm'>
-						<ArrowLeft size={18} /> Back to Blogs
-					</button>
-					<button
-						onClick={() => toast.success('Link copied!')}
-						className='p-2 rounded-lg bg-dark-600 text-gray-400 hover:text-brand-gold transition-all'>
-						<Share2 size={18} />
-					</button>
+		<div>
+			{/* ── Header ──────────────────────────────── */}
+			<section className='py-20 relative overflow-hidden' style={{ background: 'linear-gradient(135deg, #2FA4A9 0%, #6BC1B7 45%, #F5E6CA 100%)' }}>
+				<div className='absolute bottom-0 left-0 w-full'>
+					<svg viewBox='0 0 1440 80' fill='none' xmlns='http://www.w3.org/2000/svg' className='w-full' preserveAspectRatio='none' style={{ height: '70px' }}>
+						<path d='M0,40 C320,80 640,10 960,45 C1200,65 1380,30 1440,25 L1440,80 L0,80 Z' fill='white' />
+					</svg>
 				</div>
-			</div>
+			</section>
 
-			<div className='max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12'>
+			<div className='max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10'>
+
 				{/* Featured Image */}
 				{blog.featuredImage && (
-					<div className='rounded-2xl overflow-hidden mb-8 h-96 bg-dark-800'>
-						<img
-							src={blog.featuredImage}
-							alt={blog.title}
-							className='w-full h-full object-cover'
-						/>
+					<div className='rounded-3xl overflow-hidden mb-8 h-72 md:h-96 shadow-lg'>
+						<img src={blog.featuredImage} alt={blog.title} className='w-full h-full object-cover' />
 					</div>
 				)}
 
-				{/* Meta Info */}
-				<div className='flex flex-wrap items-center gap-4 mb-6 pb-6 border-b border-dark-400/30'>
-					<span className='px-3 py-1 bg-brand-gold/10 text-brand-gold text-xs font-bold rounded-full'>
-						{blog.category}
-					</span>
-					<div className='flex items-center gap-2 text-sm text-gray-400'>
-						<User size={16} />
-						<span>{blog.author || 'Miras Team'}</span>
+				{/* Meta */}
+				<div className='flex flex-wrap items-center gap-4 mb-6 pb-6' style={{ borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
+					<span className='tag'>{blog.category || 'Travel Guide'}</span>
+					<div className='flex items-center gap-1.5 text-sm' style={{ color: '#6B7280' }}>
+						<User size={14} /><span>{blog.author || 'Miras Team'}</span>
 					</div>
-					<div className='flex items-center gap-2 text-sm text-gray-400'>
-						<Calendar size={16} />
-						<span>
-							{formatDistanceToNow(new Date(blog.createdAt), {
-								addSuffix: true,
-							})}
-						</span>
+					<div className='flex items-center gap-1.5 text-sm' style={{ color: '#6B7280' }}>
+						<Calendar size={14} /><span>{formatDistanceToNow(new Date(blog.createdAt), { addSuffix: true })}</span>
 					</div>
-					<div className='flex items-center gap-2 text-sm text-gray-400'>
-						<Eye size={16} />
-						<span>{blog.views || 0} views</span>
+					<div className='flex items-center gap-1.5 text-sm' style={{ color: '#6B7280' }}>
+						<Eye size={14} /><span>{blog.views || 0} views</span>
 					</div>
-					{blog.readTime && (
-						<span className='text-sm text-gray-400'>
-							• {blog.readTime}
-						</span>
-					)}
+					{blog.readTime && <span className='text-sm' style={{ color: '#6B7280' }}>· {blog.readTime}</span>}
 				</div>
 
 				{/* Title & Excerpt */}
 				<div className='mb-8'>
-					<h1 className='heading-2 mb-4'>{blog.title}</h1>
+					<h1 className='font-display font-bold mb-4' style={{ fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', color: '#1A1A1A' }}>{blog.title}</h1>
 					{blog.excerpt && (
-						<p className='text-xl text-gray-300 italic'>
+						<p className='text-lg italic leading-relaxed pl-4' style={{ color: '#6B7280', borderLeft: '4px solid #FF8A3D' }}>
 							{blog.excerpt}
 						</p>
 					)}
 				</div>
 
 				{/* Content */}
-				<div className='prose prose-invert max-w-none mb-16'>
+				<div className='mb-16'>
 					<div
-						className='text-gray-300 leading-relaxed text-lg blog-content'
+						className='leading-relaxed blog-content'
+						style={{ lineHeight: '1.9', fontSize: '16px', color: '#6B7280' }}
 						dangerouslySetInnerHTML={{ __html: blog.content }}
 					/>
 				</div>
 
 				{/* Tags */}
 				{blog.tags && blog.tags.length > 0 && (
-					<div className='mb-12 pb-12 border-b border-dark-400/30'>
-						<h3 className='text-sm font-semibold text-gray-400 mb-3'>
-							Tags
-						</h3>
+					<div className='mb-12 pb-12' style={{ borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
+						<p className='text-sm font-bold mb-3' style={{ color: '#1A1A1A' }}>Tags</p>
 						<div className='flex flex-wrap gap-2'>
 							{blog.tags.map((tag, i) => (
-								<span
-									key={i}
-									className='px-3 py-1.5 bg-dark-800 text-gray-300 text-sm rounded-lg hover:bg-dark-700 transition-colors cursor-pointer'>
+								<span key={i}
+									className='px-3 py-1 text-sm rounded-full transition-colors cursor-pointer'
+									style={{ background: 'rgba(0,0,0,0.04)', color: '#6B7280' }}>
 									#{tag}
 								</span>
 							))}
@@ -140,39 +115,34 @@ export default function BlogDetail() {
 					</div>
 				)}
 
+				{/* CTA */}
+				<div className='card-glass p-10 text-center mb-16' style={{ background: 'linear-gradient(135deg, rgba(47,164,169,0.12), rgba(107,193,183,0.08))' }}>
+					<h3 className='text-2xl font-display font-extrabold mb-3' style={{ color: '#1A1A1A' }}>
+						Ready to Explore Kashmir?
+					</h3>
+					<p className='mb-8' style={{ color: '#6B7280' }}>Book your perfect car today and experience the valley with Miras</p>
+					<Link to='/cars' className='btn-cta px-7 py-3 justify-center'>View Our Fleet</Link>
+				</div>
+
 				{/* Related Cars */}
 				{relatedCars.length > 0 && (
 					<div className='mb-16'>
-						<h2 className='heading-3 mb-8'>Featured Vehicles</h2>
-						<div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
+						<h2 className='font-display font-bold mb-8' style={{ fontSize: '1.5rem', color: '#1A1A1A' }}>Cars for Your Trip</h2>
+						<div className='grid grid-cols-1 md:grid-cols-3 gap-5'>
 							{relatedCars.map((car) => (
-								<Link
-									key={car._id}
-									to={`/cars/${car.slug}`}
-									className='card card-hover overflow-hidden group'>
+								<Link key={car._id} to={`/cars/${car.slug}`} className='car-card group'>
 									{car.images?.[0] && (
-										<div className='h-48 bg-dark-700 overflow-hidden'>
-											<img
-												src={car.images[0]}
-												alt={car.name}
-												className='w-full h-full object-cover group-hover:scale-105 transition-transform duration-300'
-											/>
+										<div className='h-40 overflow-hidden'>
+											<img src={car.images[0]} alt={car.name}
+												className='w-full h-full object-cover group-hover:scale-105 transition-transform duration-500' />
 										</div>
 									)}
 									<div className='p-4'>
-										<h3 className='font-semibold text-white mb-1'>
-											{car.name}
-										</h3>
-										<p className='text-brand-gold text-xs font-medium mb-3'>
-											{car.category}
-										</p>
+										<h3 className='font-bold mb-1' style={{ color: '#1A1A1A' }}>{car.name}</h3>
+										<p className='text-xs font-semibold mb-2' style={{ color: '#6B7280' }}>{car.category}</p>
 										<div className='flex items-baseline gap-1'>
-											<span className='text-lg font-bold text-white'>
-												₹{car.pricePerDay}
-											</span>
-											<span className='text-gray-400 text-xs'>
-												/day
-											</span>
+											<span className='text-lg font-extrabold' style={{ background: 'linear-gradient(135deg, #FF8A3D, #F2994A)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>₹{car.pricePerDay?.toLocaleString()}</span>
+											<span className='text-xs' style={{ color: '#6B7280' }}>/day</span>
 										</div>
 									</div>
 								</Link>
@@ -180,50 +150,33 @@ export default function BlogDetail() {
 						</div>
 					</div>
 				)}
-
-				{/* CTA */}
-				<div className='bg-gradient-to-r from-brand-gold/10 to-brand-gold/5 border border-brand-gold/20 rounded-2xl p-8 text-center'>
-					<h3 className='text-2xl font-bold text-white mb-3'>
-						Ready to Explore Kashmir?
-					</h3>
-					<p className='text-gray-400 mb-6'>
-						Book your perfect car today and experience the adventure
-					</p>
-					<Link to='/cars' className='btn-gold'>
-						View Our Fleet
-					</Link>
-				</div>
 			</div>
 
-			{/* Recommended Articles */}
+			{/* More Articles */}
 			{moreBlogs.length > 0 && (
-				<section className='py-16 bg-dark-800'>
+				<section className='py-16' style={{ background: '#F8F9FA' }}>
 					<div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
-						<h2 className='heading-3 mb-8'>More Articles</h2>
+						<div className='flex items-end justify-between mb-8'>
+							<div>
+								<span className='section-label mb-2 block'>Keep Reading</span>
+								<h2 className='font-display font-bold' style={{ fontSize: 'clamp(1.5rem, 3vw, 2rem)', color: '#1A1A1A' }}>More Travel Guides</h2>
+							</div>
+						</div>
 						<div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
 							{moreBlogs.map((b) => (
-								<Link
-									key={b._id}
-									to={`/blog/${b.slug}`}
-									className='card card-hover p-6 group'>
+								<Link key={b._id} to={`/blog/${b.slug}`} className='blog-card group'>
 									{b.featuredImage && (
-										<div className='h-40 bg-dark-700 rounded-lg mb-4 overflow-hidden'>
-											<img
-												src={b.featuredImage}
-												alt={b.title}
-												className='w-full h-full object-cover group-hover:scale-105 transition-transform duration-300'
-											/>
+										<div className='h-44 overflow-hidden'>
+											<img src={b.featuredImage} alt={b.title}
+												className='w-full h-full object-cover group-hover:scale-105 transition-transform duration-500' />
 										</div>
 									)}
-									<p className='text-brand-gold text-xs font-semibold mb-2'>
-										{b.category || 'Travel Guide'}
-									</p>
-									<h3 className='text-lg font-semibold text-white mb-2 line-clamp-2'>
-										{b.title}
-									</h3>
-									<p className='text-gray-400 text-sm line-clamp-2'>
-										{b.excerpt}
-									</p>
+									<div className='p-5'>
+										<span className='tag mb-2'>{b.category || 'Travel'}</span>
+										<h3 className='text-base font-bold mb-2 line-clamp-2' style={{ color: '#1A1A1A' }}>{b.title}</h3>
+										<p className='text-xs line-clamp-2 mb-3' style={{ color: '#6B7280' }}>{b.excerpt}</p>
+										<span className='text-xs font-semibold' style={{ color: '#FF8A3D' }}>Read Article →</span>
+									</div>
 								</Link>
 							))}
 						</div>

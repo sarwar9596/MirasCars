@@ -1,5 +1,6 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
+import { useEffect } from 'react';
 import Layout from './components/Layout';
 import Home from './pages/Home';
 import Cars from './pages/Cars';
@@ -9,13 +10,19 @@ import BlogDetail from './pages/BlogDetail';
 import About from './pages/About';
 import Contact from './pages/Contact';
 
+function ScrollToTop() {
+	const { pathname } = useLocation();
+	useEffect(() => {
+		window.scrollTo(0, 0);
+	}, [pathname]);
+	return null;
+}
+
 export default function App() {
 	return (
 		<BrowserRouter>
-			<Toaster
-				position='top-right'
-				toastOptions={{ duration: 4000 }}
-			/>
+			<ScrollToTop />
+			<Toaster position='top-right' toastOptions={{ duration: 4000 }} />
 			<Routes>
 				<Route path='/' element={<Layout />}>
 					<Route index element={<Home />} />
