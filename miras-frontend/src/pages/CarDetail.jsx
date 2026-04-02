@@ -16,6 +16,7 @@ export default function CarDetail() {
 	const [bookingOpen, setBookingOpen] = useState(false);
 	const [bookingLoading, setBookingLoading] = useState(false);
 	const [successUrl, setSuccessUrl] = useState('');
+	const [adminWaUrl, setAdminWaUrl] = useState('');
 	const [bookingForm, setBookingForm] = useState({
 		name: '', phone: '', email: '',
 		pickupDate: '', dropoffDate: '',
@@ -70,10 +71,32 @@ export default function CarDetail() {
 					: 'No licence photo attached',
 			};
 			const res = await inquiriesAPI.create(payload);
-			const waUrl = res.data?.whatsappUrl;
-			setSuccessUrl(waUrl || `https://wa.me/${whatsapp}`);
+
+			// Build WhatsApp links from inquiry data
+			const days = Math.max(1, Math.ceil((new Date(bookingForm.dropoffDate) - new Date(bookingForm.pickupDate)) / 86400000));
+
+			// Customer confirmation — pre-filled message they can send
+			const customerMsg = [
+				`Hi ${bookingForm.name}! 👋`,
+				'',
+				'Thank you for booking with *Miras Car Rental*!',
+				`We've received your request for *${car.name}*`,
+				`📅 Pickup: ${new Date(bookingForm.pickupDate).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}`,
+				`📅 Return: ${new Date(bookingForm.dropoffDate).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}`,
+				`⏱️ Duration: ${days} day${days > 1 ? 's' : ''}`,
+				'',
+				'Our team will contact you shortly to confirm your booking.',
+				'Looking forward to serving you in Kashmir! 🏔️',
+			].join('\n');
+			const customerClean = bookingForm.phone.replace(/\D/g, '');
+			const customerWaUrl = `https://wa.me/${customerClean}?text=${encodeURIComponent(customerMsg)}`;
+
+			const adminWaUrl = res.data?.adminWhatsAppUrl || `https://wa.me/${whatsapp}?text=${encodeURIComponent('New booking received from ' + bookingForm.name + ' for ' + car.name)}`;
+
+			setSuccessUrl(customerWaUrl);
+			setAdminWaUrl(adminWaUrl);
 			setBookingOpen(false);
-			toast.success('Booking request sent! We will contact you shortly.');
+			toast.success('Booking request sent! Check your WhatsApp.');
 		} catch {
 			toast.error('Failed to submit booking. Please try again.');
 		} finally {
@@ -84,6 +107,7 @@ export default function CarDetail() {
 	const openBooking = () => {
 		setBookingForm({ name: '', phone: '', email: '', pickupDate: '', dropoffDate: '', licenceFile: null });
 		setSuccessUrl('');
+		setAdminWaUrl('');
 		setBookingOpen(true);
 	};
 
@@ -96,6 +120,9 @@ export default function CarDetail() {
 	}
 
 	if (!car) return null;
+
+	// True when the car has an ongoing booking (set by cron once pickup date is reached)
+	const isCurrentlyBooked = car.currentBooking?.status === 'ongoing'
 
 	const allPrices = [
 		{ label: 'Per Day', value: car.pricePerDay, symbol: 'day' },
@@ -232,13 +259,15 @@ export default function CarDetail() {
 							</div>
 
 							{/* Availability */}
-							<div className='flex items-center gap-2 p-3 rounded-xl' style={{ background: car.isAvailable === false ? 'rgba(239,68,68,0.08)' : 'rgba(34,197,94,0.08)', border: `1px solid ${car.isAvailable === false ? 'rgba(239,68,68,0.2)' : 'rgba(34,197,94,0.2)'}` }}>
-								<div className='w-2.5 h-2.5 rounded-full flex-shrink-0' style={{ background: car.isAvailable === false ? '#EF4444' : '#22C55E' }} />
-								<p className='text-sm font-semibold' style={{ color: car.isAvailable === false ? '#EF4444' : '#22C55E' }}>
-									{car.isAvailable === false ? 'Currently Booked' : 'Available Now'}
+							<div className='flex items-center gap-2 p-3 rounded-xl' style={{ background: isCurrentlyBooked ? 'rgba(239,68,68,0.08)' : 'rgba(34,197,94,0.08)', border: `1px solid ${isCurrentlyBooked ? 'rgba(239,68,68,0.2)' : 'rgba(34,197,94,0.2)'}` }}>
+								<div className='w-2.5 h-2.5 rounded-full flex-shrink-0' style={{ background: isCurrentlyBooked ? '#EF4444' : '#22C55E' }} />
+								<p className='text-sm font-semibold' style={{ color: isCurrentlyBooked ? '#EF4444' : '#22C55E' }}>
+									{isCurrentlyBooked ? 'Booked' : 'Available Now'}
 								</p>
-								{car.bookedUntil && (
-									<span className='text-xs ml-auto' style={{ color: '#6B7280' }}>Free from {new Date(car.bookedUntil).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</span>
+								{isCurrentlyBooked && car.currentBooking?.dropoffDate && (
+									<span className='text-xs ml-auto' style={{ color: '#6B7280' }}>
+										Until {new Date(car.currentBooking.dropoffDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+									</span>
 								)}
 							</div>
 
@@ -260,9 +289,15 @@ export default function CarDetail() {
 
 							{/* CTAs */}
 							<div className='space-y-3 pt-4'>
-								<button onClick={openBooking} className='block btn-blue w-full py-3 justify-center text-base font-bold'>
-									Book This Car
-								</button>
+								{isCurrentlyBooked ? (
+									<div className='block w-full py-3 text-center text-base font-bold rounded-full' style={{ background: '#E5E7EB', color: '#9CA3AF', cursor: 'default' }}>
+										Not Available to Book
+									</div>
+								) : (
+									<button onClick={openBooking} className='block btn-blue w-full py-3 justify-center text-base font-bold'>
+										Book This Car
+									</button>
+								)}
 								<a href={`https://wa.me/${whatsapp}?text=Hi!%20I%27m%20interested%20in%20renting%20${encodeURIComponent(car.name)}`}
 									target='_blank' rel='noopener noreferrer'
 									className='block text-center py-3 font-semibold rounded-full transition-all'
@@ -271,15 +306,28 @@ export default function CarDetail() {
 								</a>
 							</div>
 
-							{/* Success Card */}
+							{/* Success Card — both customer confirmation & admin notification */}
 							{successUrl && (
-								<div className='rounded-xl p-4 text-center' style={{ background: 'rgba(37,211,102,0.1)', border: '1px solid rgba(37,211,102,0.25)' }}>
-									<p className='text-sm font-semibold mb-2' style={{ color: '#25D366' }}>Also message us on WhatsApp</p>
+								<div className='rounded-xl p-4' style={{ background: 'rgba(37,211,102,0.08)', border: '1px solid rgba(37,211,102,0.2)' }}>
+									<p className='text-sm font-semibold mb-3' style={{ color: '#22C55E' }}>✅ Booking request sent! Choose an option below:</p>
+
+									{/* Customer WhatsApp — confirmation */}
 									<a href={successUrl} target='_blank' rel='noopener noreferrer'
-										className='inline-flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-full'
+										className='flex items-center gap-3 w-full px-4 py-3 rounded-xl mb-2 text-sm font-semibold'
 										style={{ background: '#25D366', color: 'white' }}>
-										💬 Open WhatsApp
+										💬 Send Confirmation on WhatsApp
+										<span className='ml-auto text-xs opacity-80'>Customer</span>
 									</a>
+
+									{/* Admin WhatsApp — notification */}
+									{adminWaUrl && (
+										<a href={adminWaUrl} target='_blank' rel='noopener noreferrer'
+											className='flex items-center gap-3 w-full px-4 py-3 rounded-xl text-sm font-semibold'
+											style={{ background: 'rgba(37,211,102,0.15)', color: '#166534', border: '1px solid rgba(37,211,102,0.3)' }}>
+											🔔 Notify Admin on WhatsApp
+											<span className='ml-auto text-xs opacity-70'>Team</span>
+										</a>
+									)}
 								</div>
 							)}
 

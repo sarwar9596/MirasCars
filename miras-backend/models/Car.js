@@ -20,7 +20,13 @@ const CarSchema = new mongoose.Schema({
   isAvailable:     { type: Boolean, default: true },
   isFeatured:      { type: Boolean, default: false },
   order:           { type: Number, default: 0 },
-  bookedUntil:     { type: Date, default: null },  // Car booked until this date
+  // Tracks the current active booking on this car
+  currentBooking: {
+    bookingId:     { type: mongoose.Schema.Types.ObjectId, ref: 'Booking' },
+    status:        { type: String, enum: ['confirmed', 'ongoing'] },
+    pickupDate:    { type: Date },
+    dropoffDate:   { type: Date },
+  },
   totalBookings:   { type: Number, default: 0 },
 }, { timestamps: true })
 

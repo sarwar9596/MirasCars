@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { blogsAPI } from '../utils/api'
-import { ArrowLeft, Eye, Save, Bold, Italic, List } from 'lucide-react'
+import api from '../utils/api'
+import { ArrowLeft, Eye, Save, Bold, Italic, List, Upload, X, Image } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 const CATEGORIES = ['Travel', 'Kashmir Guide', 'Car Tips', 'Season Guide', 'News', 'Adventure']
@@ -17,6 +18,15 @@ function slugify(str) {
   return str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
 }
 
+async function uploadImage(file) {
+  const formData = new FormData()
+  formData.append('image', file)
+  const res = await api.post('/upload/local', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  })
+  return res.data.url
+}
+
 export default function AddEditBlog() {
   const { id } = useParams()
   const navigate = useNavigate()
@@ -26,6 +36,8 @@ export default function AddEditBlog() {
   const [fetching, setFetching] = useState(isEdit)
   const [preview, setPreview] = useState(false)
   const [newTag, setNewTag] = useState('')
+  const [uploadingCover, setUploadingCover] = useState(false)
+  const coverInputRef = useRef(null)
 
   useEffect(() => {
     if (!isEdit) return
@@ -59,6 +71,22 @@ export default function AddEditBlog() {
     const newText = form.content.slice(0, start) + prefix + selected + suffix + form.content.slice(end)
     set('content', newText)
     setTimeout(() => { ta.focus(); ta.setSelectionRange(start + prefix.length, end + prefix.length) }, 0)
+  }
+
+  const handleCoverFile = async (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploadingCover(true)
+    try {
+      const url = await uploadImage(file)
+      set('featuredImage', url)
+      toast.success('Cover image uploaded!')
+    } catch {
+      toast.error('Upload failed — try a smaller image')
+    } finally {
+      setUploadingCover(false)
+      e.target.value = ''
+    }
   }
 
   const handleSubmit = async (e, asDraft = false) => {
@@ -204,10 +232,49 @@ export default function AddEditBlog() {
               {/* Cover image */}
               <div className="card p-5">
                 <h3 className="font-semibold text-gray-800 mb-3">Cover Image</h3>
-                <input value={form.featuredImage} onChange={e => set('featuredImage', e.target.value)} placeholder="https://..." className="input text-sm" />
-                {form.featuredImage && (
-                  <img src={form.featuredImage} alt="" className="mt-3 w-full h-32 object-cover rounded-xl" onError={e => e.target.style.display='none'} />
+                <input ref={coverInputRef} type="file" accept="image/jpeg,image/png,image/webp,image/gif" onChange={handleCoverFile} className="hidden" />
+                {uploadingCover ? (
+                  <div className="input h-28 flex items-center justify-center gap-2 text-primary">
+                    <div className="w-4 h-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+                    <span className="text-sm">Uploading…</span>
+                  </div>
+                ) : form.featuredImage ? (
+                  <div className="relative rounded-xl overflow-hidden bg-gray-100">
+                    <img src={form.featuredImage} alt="Cover" className="w-full h-36 object-cover" />
+                    <div className="absolute inset-0 bg-black/0 hover:bg-black/30 transition-colors flex items-center justify-center">
+                      <div className="flex gap-2 opacity-0 hover:opacity-100 transition-opacity">
+                        <button
+                          type="button"
+                          onClick={() => coverInputRef.current?.click()}
+                          className="w-9 h-9 rounded-xl bg-white/90 border border-gray-200 flex items-center justify-center text-gray-500 hover:text-primary transition-colors shadow"
+                          title="Replace image">
+                          <Upload size={14} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => set('featuredImage', '')}
+                          className="w-9 h-9 rounded-xl bg-white/90 border border-gray-200 flex items-center justify-center text-gray-500 hover:text-red-500 transition-colors shadow"
+                          title="Remove image">
+                          <X size={14} />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => coverInputRef.current?.click()}
+                    className="input h-28 flex flex-col items-center justify-center gap-2 text-gray-400 hover:text-primary hover:border-primary/30 cursor-pointer transition-colors">
+                    <Image size={20} />
+                    <span className="text-xs">Click to upload cover image</span>
+                  </button>
                 )}
+                <input
+                  value={form.featuredImage}
+                  onChange={e => set('featuredImage', e.target.value)}
+                  placeholder="Or paste image URL…"
+                  className="input text-sm mt-2"
+                />
               </div>
 
               {/* Tags */}

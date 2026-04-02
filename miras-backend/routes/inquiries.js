@@ -37,8 +37,9 @@ router.post('/', async (req, res) => {
       ? Math.ceil((new Date(req.body.dropoffDate) - new Date(req.body.pickupDate)) / 86400000)
       : null
 
+    const isBooking = req.body.source === 'booking'
     const msgLines = [
-      '🚗 *New Inquiry – Miras Car Rental*',
+      isBooking ? '🚗 *New Booking – Miras Car Rental*' : '📩 *New Inquiry – Miras Car Rental*',
       '',
       `👤 *Name:* ${req.body.name}`,
       `📞 *Phone:* ${req.body.phone}`,
@@ -49,13 +50,39 @@ router.post('/', async (req, res) => {
       days ? `⏱️  *Duration:* ${days} day${days > 1 ? 's' : ''}` : null,
       req.body.message ? `💬 *Message:* ${req.body.message}` : null,
       '',
-      '_Reply to confirm booking_'
+      isBooking ? '_Booking received — contact customer to confirm._' : '_Reply to confirm booking_'
     ].filter(Boolean).join('\n')
 
     const whatsappUrl = `https://wa.me/${wa}?text=${encodeURIComponent(msgLines)}`
 
-    res.status(201).json({ success: true, data: inquiry, whatsappUrl })
-  } catch (err) { res.status(400).json({ success: false, error: err.message }) }
+    // Customer confirmation message
+    const days2 = req.body.pickupDate && req.body.dropoffDate
+      ? Math.ceil((new Date(req.body.dropoffDate) - new Date(req.body.pickupDate)) / 86400000)
+      : null
+    const customerMsg = [
+      `Hi ${req.body.name}! 👋`,
+      '',
+      'Thank you for booking with *Miras Car Rental*!',
+      `We've received your request for *${req.body.carName || 'a car'}*`,
+      req.body.pickupDate ? `📅 *Pickup:* ${new Date(req.body.pickupDate).toDateString()}` : null,
+      req.body.dropoffDate ? `📅 *Return:* ${new Date(req.body.dropoffDate).toDateString()}` : null,
+      days2 ? `⏱️ *Duration:* ${days2} day${days2 > 1 ? 's' : ''}` : null,
+      '',
+      'Our team will contact you shortly to confirm your booking.',
+      'Looking forward to serving you in Kashmir! 🏔️',
+    ].filter(Boolean).join('\n')
+    const customerPhone = req.body.phone?.replace(/\D/g, '') || ''
+    const customerWhatsAppUrl = customerPhone
+      ? `https://wa.me/${customerPhone}?text=${encodeURIComponent(customerMsg)}`
+      : null
+
+    res.status(201).json({
+      success: true,
+      data: inquiry,
+      adminWhatsAppUrl: whatsappUrl,
+      customerWhatsAppUrl,
+    })
+  } catch (err) { console.error('Inquiry POST error:', err.message, err.errors); res.status(400).json({ success: false, error: err.message }) }
 })
 
 // PUT /api/inquiries/:id  (admin – update status / notes)

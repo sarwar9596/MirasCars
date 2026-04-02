@@ -52,4 +52,64 @@ app.listen(PORT, () => {
   console.log(`\n🚀 Miras Backend running on http://localhost:${PORT}`)
   console.log(`📊 Health: http://localhost:${PORT}/api/health`)
   console.log(`\nAdmin credentials: admin@mirascarrental.com / Miras@2024\n`)
+
+  // ── Booking status auto-transition cron ─────────────────────────────────────
+  const Booking = require('./models/Booking')
+  const Car = require('./models/Car')
+
+  const tickBookings = async () => {
+    try {
+      const now = new Date()
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+
+      // confirmed → ongoing (pickup date reached)
+      const confirmedDue = await Booking.find({
+        status: 'confirmed',
+        pickupDate: { $lte: today },
+      })
+      for (const b of confirmedDue) {
+        b.status = 'ongoing'
+        await b.save()
+        if (b.carId) {
+          await Car.findByIdAndUpdate(b.carId, {
+            isAvailable: false,
+            currentBooking: {
+              bookingId: b._id,
+              status: 'ongoing',
+              pickupDate: b.pickupDate,
+              dropoffDate: b.dropoffDate,
+            },
+          })
+        }
+        console.log(`🚗 Booking ${b._id} → ongoing`)
+      }
+
+      // ongoing → completed (dropoff date passed)
+      const ongoingDue = await Booking.find({
+        status: 'ongoing',
+        dropoffDate: { $lt: today },
+      })
+      for (const b of ongoingDue) {
+        b.status = 'completed'
+        await b.save()
+        if (b.carId) {
+          await Car.findByIdAndUpdate(b.carId, {
+            isAvailable: true,
+            currentBooking: null,
+          })
+        }
+        console.log(`✅ Booking ${b._id} → completed, car restored to available`)
+      }
+
+      if (confirmedDue.length === 0 && ongoingDue.length === 0) {
+        // silent tick — only log on actual changes
+      }
+    } catch (err) {
+      console.error('Booking cron error:', err.message)
+    }
+  }
+
+  // Run immediately on startup, then every 5 minutes
+  tickBookings()
+  setInterval(tickBookings, 5 * 60 * 1000)
 })

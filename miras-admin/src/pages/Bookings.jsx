@@ -5,20 +5,20 @@ import { format, formatDistanceToNow } from 'date-fns'
 import toast from 'react-hot-toast'
 
 const STATUS_STYLES = {
-  pending:   'bg-amber-100 text-amber-600 border-amber-300/50',
+
   confirmed: 'bg-green-100 text-green-700 border-green-300/50',
   ongoing:   'bg-blue-100 text-blue-600 border-blue-300/50',
   completed: 'bg-gray-100 text-gray-500 border-gray-300/50',
   cancelled: 'bg-red-100 text-red-600 border-red-300/50',
 }
 
-const ALL_STATUSES = ['pending','confirmed','ongoing','completed','cancelled']
+const ALL_STATUSES = ['confirmed','ongoing','completed','cancelled']
 
 export default function Bookings() {
   const [bookings, setBookings] = useState([])
   const [cars, setCars] = useState([])
   const [loading, setLoading] = useState(true)
-  const [filter, setFilter] = useState('all')
+  const [filter, setFilter] = useState('confirmed')
   const [search, setSearch] = useState('')
   const [expanded, setExpanded] = useState(null)
   const [showAdd, setShowAdd] = useState(false)
@@ -28,7 +28,7 @@ export default function Bookings() {
     setLoading(true)
     try {
       const [bRes, cRes] = await Promise.all([
-        bookingsAPI.getAll({ status: filter !== 'all' ? filter : undefined }),
+        bookingsAPI.getAll({ status: filter || undefined }),
         carsAPI.getAll({ limit: 100 }),
       ])
       setBookings(bRes.data?.data || [])
@@ -85,7 +85,7 @@ export default function Bookings() {
       {/* Summary row */}
       <div className="grid grid-cols-5 gap-3">
         {ALL_STATUSES.map(s => (
-          <button key={s} onClick={() => setFilter(s === filter ? 'all' : s)}
+          <button key={s} onClick={() => setFilter(s === filter ? undefined : s)}
             className={`card p-3 text-center transition-all hover:border-primary/30 ${filter === s ? 'border border-primary/30' : ''}`}>
             <p className="text-xl font-bold text-gray-800">{counts[s]}</p>
             <p className="text-xs text-gray-400 capitalize mt-0.5">{s}</p>
@@ -106,7 +106,7 @@ export default function Bookings() {
 
       {/* All/filter tabs */}
       <div className="flex gap-2 flex-wrap">
-        {['all', ...ALL_STATUSES].map(s => (
+        {[...ALL_STATUSES].map(s => (
           <button key={s} onClick={() => setFilter(s)}
             className={`px-4 py-1.5 rounded-full text-sm font-medium capitalize transition-all ${filter === s ? 'bg-primary text-white' : 'bg-white text-gray-500 border border-gray-200 hover:border-primary/30 hover:text-primary'}`}>
             {s}
@@ -126,7 +126,7 @@ export default function Bookings() {
       ) : (
         <div className="space-y-3">
           {filtered.map(book => (
-            <div key={book._id} className={`card overflow-hidden ${book.status === 'pending' ? 'border-amber-300/30' : ''}`}>
+            <div key={book._id} className={`card overflow-hidden `}>
               <div
                 className="flex items-center gap-4 p-4 cursor-pointer hover:bg-gray-50 transition-colors"
                 onClick={() => setExpanded(expanded === book._id ? null : book._id)}
@@ -137,13 +137,12 @@ export default function Bookings() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <p className="font-semibold text-gray-800">{book.customerName || 'Customer'}</p>
-                    {book.status === 'pending' && <span className="w-2 h-2 rounded-full bg-amber-400 notif-dot" />}
                   </div>
                   <p className="text-sm text-gray-400">{book.carName || book.car?.name || 'Car'} · {book.totalDays || '—'} days</p>
                 </div>
                 <div className="flex items-center gap-3 flex-shrink-0">
                   <p className="text-primary font-semibold">₹{book.totalPrice?.toLocaleString() || '—'}</p>
-                  <span className={`badge border ${STATUS_STYLES[book.status] || STATUS_STYLES.pending}`}>{book.status}</span>
+                  <span className={`badge border ${STATUS_STYLES[book.status] }`}>{book.status}</span>
                   <ChevronDown size={16} className={`text-gray-400 transition-transform ${expanded === book._id ? 'rotate-180' : ''}`} />
                 </div>
               </div>

@@ -13,6 +13,11 @@ const CATEGORIES = [
 	'MUV',
 ];
 
+// Returns true if the car has an ongoing booking (confirmed by cron once pickup date is reached)
+function isCarBooked(car) {
+	return car.currentBooking?.status === 'ongoing'
+}
+
 export default function Cars() {
 	const [cars, setCars] = useState([]);
 	const [loading, setLoading] = useState(true);
@@ -154,6 +159,15 @@ export default function Cars() {
 											{car.isFeatured && (
 												<div className='absolute top-3 right-3'>
 													<span className='tag-gold'>FEATURED</span>
+												</div>
+											)}
+											{isCarBooked(car) && (
+												<div className='absolute top-3 left-1/2 -translate-x-1/2'>
+													<span
+														className='px-3 py-1 text-xs font-bold rounded-full'
+														style={{ background: '#DC2626', color: '#fff' }}>
+														BOOKED
+													</span>
 												</div>
 											)}
 											<div className='absolute bottom-3 left-3'>
