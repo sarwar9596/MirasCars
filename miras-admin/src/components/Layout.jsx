@@ -22,7 +22,7 @@ export default function Layout() {
   const meta = pageMeta[location.pathname] || { title: 'Miras Admin' }
 
   return (
-    <div className="min-h-screen bg-dark-900 flex">
+    <div className="min-h-screen flex" style={{ background: '#F5F7F6' }}>
       <Sidebar collapsed={collapsed} onToggle={() => setCollapsed(c => !c)} />
 
       <div className={`flex-1 flex flex-col transition-all duration-300 ${collapsed ? 'ml-[72px]' : 'ml-64'}`}>

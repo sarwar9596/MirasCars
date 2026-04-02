@@ -28,33 +28,32 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen bg-dark-900 flex">
+    <div className="min-h-screen flex" style={{ background: '#F5F7F6' }}>
       {/* Left panel — branding */}
-      <div className="hidden lg:flex w-1/2 relative overflow-hidden items-center justify-center">
-        {/* Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-dark-800 via-dark-700 to-dark-900" />
-        <div className="absolute inset-0 opacity-20"
-          style={{ backgroundImage: 'radial-gradient(circle at 30% 40%, #C9A84C 0%, transparent 50%), radial-gradient(circle at 70% 80%, #A07C30 0%, transparent 40%)' }} />
+      <div className="hidden lg:flex w-1/2 relative overflow-hidden items-center justify-center" style={{ background: 'linear-gradient(135deg, #1F7A4D 0%, #2E8B57 50%, #17633E 100%)' }}>
+        {/* Decorative circles */}
+        <div className="absolute inset-0 opacity-10"
+          style={{ backgroundImage: 'radial-gradient(circle at 20% 30%, #fff 0%, transparent 40%), radial-gradient(circle at 80% 70%, #fff 0%, transparent 30%)' }} />
         {/* Grid lines */}
         <div className="absolute inset-0 opacity-5"
-          style={{ backgroundImage: 'linear-gradient(#C9A84C 1px, transparent 1px), linear-gradient(90deg, #C9A84C 1px, transparent 1px)', backgroundSize: '60px 60px' }} />
+          style={{ backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)', backgroundSize: '60px 60px' }} />
 
         <div className="relative z-10 text-center px-12">
-          <div className="w-20 h-20 rounded-3xl bg-gold-gradient shadow-gold-lg flex items-center justify-center mx-auto mb-6">
-            <span className="text-dark-900 font-display font-bold text-3xl">M</span>
+          <div className="w-20 h-20 rounded-3xl bg-white/20 backdrop-blur-sm flex items-center justify-center mx-auto mb-6 shadow-xl">
+            <span className="text-white font-bold text-3xl">M</span>
           </div>
-          <h1 className="font-display text-5xl font-bold text-white mb-3">Miras</h1>
-          <p className="text-2xl text-brand-gold font-display mb-6">Car Rental</p>
-          <p className="text-gray-400 text-base max-w-sm leading-relaxed">
+          <h1 className="text-5xl font-bold text-white mb-3">Miras</h1>
+          <p className="text-xl text-white/80 font-medium mb-6">Car Rental</p>
+          <p className="text-white/60 text-base max-w-sm leading-relaxed">
             Premium car rental services across the Kashmir Valley — manage your fleet, bookings and business from one place.
           </p>
 
           <div className="mt-10 grid grid-cols-3 gap-4">
             {[['🚗','Fleet','Manage cars'],['📊','Analytics','Track revenue'],['🔔','Alerts','Live updates']].map(([icon, label, sub]) => (
-              <div key={label} className="bg-dark-600/50 border border-dark-400/50 rounded-2xl p-4 text-center">
+              <div key={label} className="bg-white/10 backdrop-blur-sm border border-white/10 rounded-2xl p-4 text-center">
                 <div className="text-2xl mb-1">{icon}</div>
                 <p className="text-white text-sm font-semibold">{label}</p>
-                <p className="text-gray-500 text-xs mt-0.5">{sub}</p>
+                <p className="text-white/50 text-xs mt-0.5">{sub}</p>
               </div>
             ))}
           </div>
@@ -66,23 +65,23 @@ export default function Login() {
         <div className="w-full max-w-md">
           {/* Mobile logo */}
           <div className="lg:hidden flex items-center gap-3 mb-8">
-            <div className="w-10 h-10 rounded-xl bg-gold-gradient flex items-center justify-center">
-              <span className="text-dark-900 font-bold text-lg">M</span>
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #1F7A4D, #2E8B57)' }}>
+              <span className="text-white font-bold text-lg">M</span>
             </div>
             <div>
-              <p className="font-display font-bold text-white">Miras Admin</p>
-              <p className="text-xs text-gray-500">Car Rental Panel</p>
+              <p className="font-bold text-gray-800">Miras Admin</p>
+              <p className="text-xs text-gray-400">Car Rental Panel</p>
             </div>
           </div>
 
           <div className="mb-8">
-            <h2 className="text-3xl font-display font-bold text-white mb-2">Sign in</h2>
+            <h2 className="text-3xl font-bold text-gray-800 mb-2">Sign in</h2>
             <p className="text-gray-400">Access your admin dashboard</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             {error && (
-              <div className="flex items-center gap-2 bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3 text-red-400 text-sm">
+              <div className="flex items-center gap-2 bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-red-500 text-sm">
                 <AlertCircle size={15} />
                 <span>{error}</span>
               </div>
@@ -91,7 +90,7 @@ export default function Login() {
             <div>
               <label className="label">Email Address</label>
               <div className="relative">
-                <Mail size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500" />
+                <Mail size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input
                   type="email"
                   placeholder="admin@mirasrentals.com"
@@ -106,7 +105,7 @@ export default function Login() {
             <div>
               <label className="label">Password</label>
               <div className="relative">
-                <Lock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500" />
+                <Lock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input
                   type={showPw ? 'text' : 'password'}
                   placeholder="••••••••"
@@ -118,7 +117,7 @@ export default function Login() {
                 <button
                   type="button"
                   onClick={() => setShowPw(v => !v)}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                 >
                   {showPw ? <EyeOff size={15} /> : <Eye size={15} />}
                 </button>
@@ -128,11 +127,11 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="btn-gold w-full py-3 flex items-center justify-center gap-2 mt-2"
+              className="btn-primary w-full py-3 flex items-center justify-center gap-2 mt-2"
             >
               {loading ? (
                 <>
-                  <div className="w-4 h-4 border-2 border-dark-900/30 border-t-dark-900 rounded-full animate-spin" />
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   <span>Signing in…</span>
                 </>
               ) : 'Sign In to Admin Panel'}
@@ -140,10 +139,10 @@ export default function Login() {
           </form>
 
           {/* Demo credentials hint */}
-          <div className="mt-6 p-4 bg-dark-700/50 border border-dark-400/40 rounded-xl text-xs text-gray-500">
-            <p className="font-medium text-gray-400 mb-1">Demo credentials</p>
-            <p>Email: <span className="text-brand-gold">admin@mirasrentals.com</span></p>
-            <p>Password: <span className="text-brand-gold">admin123</span></p>
+          <div className="mt-6 p-4 bg-white border border-gray-200 rounded-xl text-xs text-gray-500">
+            <p className="font-medium text-gray-500 mb-1">Demo credentials</p>
+            <p>Email: <span className="text-primary font-medium">admin@mirasrentals.com</span></p>
+            <p>Password: <span className="text-primary font-medium">admin123</span></p>
           </div>
         </div>
       </div>

@@ -2,6 +2,7 @@ const express  = require('express')
 const router   = express.Router()
 const Inquiry  = require('../models/Inquiry')
 const Car      = require('../models/Car')
+const SiteSettings = require('../models/SiteSettings')
 const { protect } = require('../middleware/auth')
 
 // GET /api/inquiries  (admin)
@@ -10,7 +11,10 @@ router.get('/', protect, async (req, res) => {
     const { status, limit = 100 } = req.query
     let query = {}
     if (status) query.status = status
-    const inquiries = await Inquiry.find(query).sort({ createdAt: -1 }).limit(Number(limit))
+    const inquiries = await Inquiry.find(query)
+      .sort({ createdAt: -1 })
+      .limit(Number(limit))
+      .populate('carId', 'name images color category pricePerDay')
     const unread    = await Inquiry.countDocuments({ isRead: false })
     res.json({ success: true, count: inquiries.length, unread, data: inquiries })
   } catch (err) { res.status(500).json({ success: false, error: err.message }) }
@@ -27,7 +31,8 @@ router.post('/', async (req, res) => {
     }
 
     // Build WhatsApp notification message
-    const wa   = process.env.WHATSAPP_NUMBER || '919876543210'
+    const settings = await SiteSettings.findOne().lean()
+    const wa = settings?.whatsapp || process.env.WHATSAPP_NUMBER || '919103489268'
     const days = req.body.pickupDate && req.body.dropoffDate
       ? Math.ceil((new Date(req.body.dropoffDate) - new Date(req.body.pickupDate)) / 86400000)
       : null

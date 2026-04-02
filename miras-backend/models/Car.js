@@ -12,6 +12,7 @@ const CarSchema = new mongoose.Schema({
   fuelType:        { type: String, enum: ['Petrol','Diesel','CNG','Electric'], required: true },
   transmission:    { type: String, enum: ['Manual','Automatic'], required: true },
   mileage:         { type: String },          // e.g. "18 kmpl"
+  color:           { type: String },          // e.g. "Pearl White"
   modelYear:       { type: Number },
   lastServiceDate: { type: Date },
   features:        [{ type: String }],        // ['AC','Bluetooth','USB',...]

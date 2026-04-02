@@ -46,56 +46,56 @@ export default function Blogs() {
     <div className="space-y-5 page-enter">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="relative flex-1 max-w-sm">
-          <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500" />
+          <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
           <input placeholder="Search posts…" value={search} onChange={e => setSearch(e.target.value)} className="input pl-10 py-2.5" />
         </div>
-        <Link to="/blogs/add" className="btn-gold flex items-center gap-2">
+        <Link to="/blogs/add" className="btn-primary flex items-center gap-2">
           <Plus size={16} /> Write Post
         </Link>
       </div>
 
       {loading ? (
-        <div className="flex justify-center py-16"><div className="w-8 h-8 border-2 border-brand-gold/30 border-t-brand-gold rounded-full animate-spin"/></div>
+        <div className="flex justify-center py-16"><div className="w-8 h-8 border-2 border-primary/20 border-t-primary rounded-full animate-spin"/></div>
       ) : filtered.length === 0 ? (
         <div className="card p-16 text-center">
           <div className="text-5xl mb-4">📝</div>
-          <p className="text-white font-semibold">No blog posts yet</p>
-          <p className="text-gray-500 text-sm mt-1 mb-4">Write your first post about Kashmir travel & car tips</p>
-          <Link to="/blogs/add" className="btn-gold inline-flex items-center gap-2"><Plus size={15}/>Write First Post</Link>
+          <p className="text-gray-800 font-semibold">No blog posts yet</p>
+          <p className="text-gray-400 text-sm mt-1 mb-4">Write your first post about Kashmir travel & car tips</p>
+          <Link to="/blogs/add" className="btn-primary inline-flex items-center gap-2"><Plus size={15}/>Write First Post</Link>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {filtered.map(blog => (
-            <div key={blog._id} className="card overflow-hidden group hover:border-brand-gold/30 transition-all duration-300">
+            <div key={blog._id} className="card overflow-hidden group hover:border-primary/30 transition-all duration-300">
               {/* Cover image */}
-              <div className="h-40 bg-dark-700 overflow-hidden relative">
+              <div className="h-40 bg-gray-100 overflow-hidden relative">
                 {blog.featuredImage ? (
                   <img src={blog.featuredImage} alt={blog.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-4xl">📰</div>
                 )}
-                <div className={`absolute top-3 right-3 badge ${blog.status === 'published' ? 'bg-green-500/20 text-green-400' : 'bg-gray-500/20 text-gray-400'}`}>
+                <div className={`absolute top-3 right-3 badge ${blog.status === 'published' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-400'}`}>
                   {blog.status === 'published' ? 'Published' : 'Draft'}
                 </div>
               </div>
 
               <div className="p-4">
-                <p className="text-xs text-brand-gold mb-1">{blog.category || 'Travel'}</p>
-                <h3 className="font-display font-bold text-white mb-1 line-clamp-2">{blog.title}</h3>
-                <p className="text-sm text-gray-500 line-clamp-2 mb-3">{blog.excerpt || blog.content?.slice(0, 100)}</p>
-                <p className="text-xs text-gray-600 mb-4">{blog.createdAt ? format(new Date(blog.createdAt), 'dd MMM yyyy') : '—'}</p>
+                <p className="text-xs text-primary mb-1 font-medium">{blog.category || 'Travel'}</p>
+                <h3 className="font-bold text-gray-800 mb-1 line-clamp-2">{blog.title}</h3>
+                <p className="text-sm text-gray-400 line-clamp-2 mb-3">{blog.excerpt || blog.content?.slice(0, 100)}</p>
+                <p className="text-xs text-gray-300 mb-4">{blog.createdAt ? format(new Date(blog.createdAt), 'dd MMM yyyy') : '—'}</p>
 
                 <div className="flex items-center gap-2">
-                  <Link to={`/blogs/edit/${blog._id}`} className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl bg-dark-600 hover:bg-brand-gold/10 hover:text-brand-gold text-gray-400 text-sm transition-all">
+                  <Link to={`/blogs/edit/${blog._id}`} className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl bg-gray-100 hover:bg-primary/10 hover:text-primary text-gray-500 text-sm transition-all">
                     <Edit2 size={13} /> Edit
                   </Link>
                   <button onClick={() => togglePublish(blog)}
-                    className={`w-10 h-9 flex items-center justify-center rounded-xl transition-all text-sm ${blog.status === 'published' ? 'bg-dark-600 hover:bg-yellow-500/10 hover:text-yellow-400 text-gray-500' : 'bg-dark-600 hover:bg-green-500/10 hover:text-green-400 text-gray-500'}`}
+                    className={`w-10 h-9 flex items-center justify-center rounded-xl transition-all text-sm ${blog.status === 'published' ? 'bg-gray-100 hover:bg-amber-50 hover:text-amber-500 text-gray-400' : 'bg-gray-100 hover:bg-green-50 hover:text-green-600 text-gray-400'}`}
                     title={blog.status === 'published' ? 'Unpublish' : 'Publish'}>
                     {blog.status === 'published' ? <EyeOff size={14} /> : <Eye size={14} />}
                   </button>
                   <button onClick={() => setDeleteId(blog._id)}
-                    className="w-10 h-9 flex items-center justify-center rounded-xl bg-dark-600 hover:bg-red-500/10 hover:text-red-400 text-gray-500 transition-all">
+                    className="w-10 h-9 flex items-center justify-center rounded-xl bg-gray-100 hover:bg-red-50 hover:text-red-500 text-gray-400 transition-all">
                     <Trash2 size={14} />
                   </button>
                 </div>
@@ -106,9 +106,9 @@ export default function Blogs() {
       )}
 
       {deleteId && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
-          <div className="bg-surface-raised border border-dark-400 rounded-2xl p-6 max-w-sm w-full">
-            <h3 className="font-display font-bold text-white text-lg mb-2">Delete Post?</h3>
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+          <div className="bg-white border border-black/5 rounded-2xl p-6 max-w-sm w-full shadow-lg">
+            <h3 className="font-bold text-gray-800 text-lg mb-2">Delete Post?</h3>
             <p className="text-gray-400 text-sm mb-6">This will permanently remove this blog post from your website.</p>
             <div className="flex gap-3">
               <button onClick={() => setDeleteId(null)} className="btn-outline flex-1">Cancel</button>

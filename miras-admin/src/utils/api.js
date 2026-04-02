@@ -79,3 +79,9 @@ export const authAPI = {
   logout: () => api.post('/auth/logout'),
   me: () => api.get('/auth/me'),
 }
+
+// ─── Settings ─────────────────────────────────────────────────────────────────
+export const settingsAPI = {
+  get: () => api.get('/settings'),
+  update: (data) => api.put('/settings', data),
+}

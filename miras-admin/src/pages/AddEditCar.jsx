@@ -85,7 +85,6 @@ export default function AddEditCar() {
 					? [...d.images]
 					: [d.image || '', '', '', '', '', ''];
 				while (imgs.length < 6) imgs.push('');
-				// Map backend isAvailable boolean to form status field
 				const status = d.isAvailable === false ? 'booked' : 'available'
 				setForm({
 					...INITIAL,
@@ -182,7 +181,7 @@ export default function AddEditCar() {
 	if (fetching)
 		return (
 			<div className='flex justify-center py-20'>
-				<div className='w-8 h-8 border-2 border-brand-gold/30 border-t-brand-gold rounded-full animate-spin' />
+				<div className='w-8 h-8 border-2 border-primary/20 border-t-primary rounded-full animate-spin' />
 			</div>
 		);
 
@@ -190,14 +189,14 @@ export default function AddEditCar() {
 		<div className='max-w-4xl mx-auto page-enter'>
 			<button
 				onClick={() => navigate('/cars')}
-				className='flex items-center gap-2 text-gray-400 hover:text-white mb-6 transition-colors text-sm'>
+				className='flex items-center gap-2 text-gray-400 hover:text-gray-600 mb-6 transition-colors text-sm'>
 				<ArrowLeft size={16} /> Back to Fleet
 			</button>
 
 			<form onSubmit={handleSubmit} className='space-y-6'>
 				{/* Basic Info */}
 				<div className='card p-6'>
-					<h2 className='font-display font-bold text-white text-lg mb-5'>
+					<h2 className='font-bold text-gray-800 text-lg mb-5'>
 						Basic Information
 					</h2>
 					<div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
@@ -210,7 +209,7 @@ export default function AddEditCar() {
 								className='input'
 							/>
 							{errors.name && (
-								<p className='text-red-400 text-xs mt-1'>
+								<p className='text-red-500 text-xs mt-1'>
 									{errors.name}
 								</p>
 							)}
@@ -272,7 +271,7 @@ export default function AddEditCar() {
 
 				{/* Specs */}
 				<div className='card p-6'>
-					<h2 className='font-display font-bold text-white text-lg mb-5'>
+					<h2 className='font-bold text-gray-800 text-lg mb-5'>
 						Specifications & Pricing
 					</h2>
 					<div className='grid grid-cols-2 md:grid-cols-4 gap-4'>
@@ -286,7 +285,7 @@ export default function AddEditCar() {
 								className='input'
 							/>
 							{errors.pricePerDay && (
-								<p className='text-red-400 text-xs mt-1'>
+								<p className='text-red-500 text-xs mt-1'>
 									{errors.pricePerDay}
 								</p>
 							)}
@@ -323,7 +322,7 @@ export default function AddEditCar() {
 								))}
 							</select>
 							{errors.seats && (
-								<p className='text-red-400 text-xs mt-1'>
+								<p className='text-red-500 text-xs mt-1'>
 									{errors.seats}
 								</p>
 							)}
@@ -338,7 +337,7 @@ export default function AddEditCar() {
 								className='input'
 							/>
 							{errors.modelYear && (
-								<p className='text-red-400 text-xs mt-1'>
+								<p className='text-red-500 text-xs mt-1'>
 									{errors.modelYear}
 								</p>
 							)}
@@ -379,8 +378,8 @@ export default function AddEditCar() {
 					</div>
 
 					{/* Booked until */}
-					<div className='mt-4 p-4 bg-yellow-500/5 border border-yellow-500/20 rounded-xl'>
-						<label className='label text-yellow-600'>
+					<div className='mt-4 p-4 bg-amber-50 border border-amber-200 rounded-xl'>
+						<label className='label text-amber-600'>
 							Booked Until (if currently reserved)
 						</label>
 						<input
@@ -389,7 +388,7 @@ export default function AddEditCar() {
 							onChange={(e) => set('bookedUntil', e.target.value)}
 							className='input max-w-xs'
 						/>
-						<p className='text-xs text-gray-600 mt-1'>
+						<p className='text-xs text-gray-400 mt-1'>
 							Leave empty if car is available now
 						</p>
 					</div>
@@ -397,10 +396,10 @@ export default function AddEditCar() {
 
 				{/* Photos */}
 				<div className='card p-6'>
-					<h2 className='font-display font-bold text-white text-lg mb-2'>
+					<h2 className='font-bold text-gray-800 text-lg mb-2'>
 						Car Photos
 					</h2>
-					<p className='text-gray-500 text-sm mb-5'>
+					<p className='text-gray-400 text-sm mb-5'>
 						Upload images from your device — up to 6 photos
 					</p>
 					<div className='grid grid-cols-2 md:grid-cols-3 gap-4'>
@@ -419,7 +418,7 @@ export default function AddEditCar() {
 
 				{/* Featured & Visibility */}
 				<div className='card p-6'>
-					<h2 className='font-display font-bold text-white text-lg mb-5'>
+					<h2 className='font-bold text-gray-800 text-lg mb-5'>
 						Display Settings
 					</h2>
 					<div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
@@ -431,13 +430,13 @@ export default function AddEditCar() {
 								<button
 									type='button'
 									onClick={() => set('isFeatured', !form.isFeatured)}
-									className={`w-12 h-6 rounded-full transition-all ${form.isFeatured ? 'bg-brand-gold' : 'bg-dark-500'} relative`}>
+									className={`w-12 h-6 rounded-full transition-all ${form.isFeatured ? 'bg-primary' : 'bg-gray-300'} relative`}>
 									<div
 										className={`w-5 h-5 rounded-full bg-white absolute top-0.5 transition-all ${form.isFeatured ? 'left-6' : 'left-0.5'}`}
 									/>
 								</button>
 							</div>
-							<p className='text-xs text-gray-500'>
+							<p className='text-xs text-gray-400'>
 								Show this car prominently on the homepage
 							</p>
 						</div>
@@ -452,7 +451,7 @@ export default function AddEditCar() {
 								placeholder='0'
 								className='input'
 							/>
-							<p className='text-xs text-gray-500 mt-1'>
+							<p className='text-xs text-gray-400 mt-1'>
 								Lower numbers appear first (0, 1, 2…)
 							</p>
 						</div>
@@ -461,7 +460,7 @@ export default function AddEditCar() {
 
 				{/* Features */}
 				<div className='card p-6'>
-					<h2 className='font-display font-bold text-white text-lg mb-5'>
+					<h2 className='font-bold text-gray-800 text-lg mb-5'>
 						Features & Amenities
 					</h2>
 					<div className='flex gap-2 mb-3'>
@@ -487,12 +486,12 @@ export default function AddEditCar() {
 							{form.features.map((f, i) => (
 								<span
 									key={i}
-									className='flex items-center gap-1.5 bg-dark-600 border border-dark-400 text-gray-300 text-sm px-3 py-1.5 rounded-full'>
+									className='flex items-center gap-1.5 bg-gray-100 border border-gray-200 text-gray-600 text-sm px-3 py-1.5 rounded-full'>
 									{f}
 									<button
 										type='button'
 										onClick={() => removeFeature(i)}
-										className='text-gray-500 hover:text-red-400 transition-colors'>
+										className='text-gray-400 hover:text-red-500 transition-colors'>
 										<X size={12} />
 									</button>
 								</span>
@@ -512,10 +511,10 @@ export default function AddEditCar() {
 					<button
 						type='submit'
 						disabled={loading}
-						className='btn-gold px-8 py-3 flex items-center gap-2'>
+						className='btn-primary px-8 py-3 flex items-center gap-2'>
 						{loading ? (
 							<>
-								<div className='w-4 h-4 border-2 border-dark-900/30 border-t-dark-900 rounded-full animate-spin' />
+								<div className='w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin' />
 								<span>Saving…</span>
 							</>
 						) : (
@@ -562,26 +561,26 @@ function ImageSlot({ img, label, onUpload, onRemove, isFirst }) {
 					className='hidden'
 				/>
 				{uploading ? (
-					<div className='input h-28 flex items-center justify-center gap-2 text-brand-gold'>
-						<div className='w-4 h-4 border-2 border-brand-gold/30 border-t-brand-gold rounded-full animate-spin' />
+					<div className='input h-28 flex items-center justify-center gap-2 text-primary'>
+						<div className='w-4 h-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin' />
 						<span className='text-sm'>Uploading…</span>
 					</div>
 				) : img ? (
-					<div className='relative h-28 rounded-lg overflow-hidden bg-dark-700'>
+					<div className='relative h-28 rounded-xl overflow-hidden bg-gray-100'>
 						<img src={img} alt={label} className='w-full h-full object-cover' />
-						<div className='absolute inset-0 bg-black/0 hover:bg-black/40 transition-colors flex items-center justify-center'>
+						<div className='absolute inset-0 bg-black/0 hover:bg-black/30 transition-colors flex items-center justify-center'>
 							<div className='flex gap-2 opacity-0 hover:opacity-100 transition-opacity'>
 								<button
 									type='button'
 									onClick={() => inputRef.current?.click()}
-									className='w-8 h-8 rounded-lg bg-dark-800/90 border border-dark-400 flex items-center justify-center text-gray-300 hover:text-brand-gold hover:border-brand-gold/50 transition-colors'
+									className='w-8 h-8 rounded-lg bg-white/90 border border-gray-200 flex items-center justify-center text-gray-500 hover:text-primary transition-colors'
 									title='Replace image'>
 									<Upload size={13} />
 								</button>
 								<button
 									type='button'
 									onClick={onRemove}
-									className='w-8 h-8 rounded-lg bg-dark-800/90 border border-dark-400 flex items-center justify-center text-gray-300 hover:text-red-400 hover:border-red-500/50 transition-colors'
+									className='w-8 h-8 rounded-lg bg-white/90 border border-gray-200 flex items-center justify-center text-gray-500 hover:text-red-500 transition-colors'
 									title='Remove image'>
 									<X size={13} />
 								</button>
@@ -592,7 +591,7 @@ function ImageSlot({ img, label, onUpload, onRemove, isFirst }) {
 					<button
 						type='button'
 						onClick={() => inputRef.current?.click()}
-						className='input h-28 flex flex-col items-center justify-center gap-2 text-gray-500 hover:text-brand-gold hover:border-brand-gold/40 cursor-pointer transition-colors'>
+						className='input h-28 flex flex-col items-center justify-center gap-2 text-gray-400 hover:text-primary hover:border-primary/30 cursor-pointer transition-colors'>
 						<Image size={20} />
 						<span className='text-xs'>Click to upload</span>
 					</button>

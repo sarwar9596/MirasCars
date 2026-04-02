@@ -7,7 +7,7 @@ export default function About() {
 			<section
 				className='py-20 relative overflow-hidden'
 				style={{
-					background: 'linear-gradient(135deg, #2FA4A9 0%, #6BC1B7 45%, #F5E6CA 100%)',
+					background: 'linear-gradient(135deg, #003366 0%, #004080 100%)',
 				}}
 			>
 				<div className='relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
@@ -49,7 +49,7 @@ export default function About() {
 								'Airport pickup, hotel delivery, and railway station drops',
 							].map((item) => (
 								<li key={item} className='flex items-start gap-3'>
-									<span style={{ color: '#FF8A3D', fontWeight: 'bold' }}>✓</span>
+									<span style={{ color: '#C5A059', fontWeight: 'bold' }}>✓</span>
 									<span>{item}</span>
 								</li>
 							))}
@@ -65,9 +65,9 @@ export default function About() {
 				{/* Stats */}
 				<div className='grid grid-cols-1 sm:grid-cols-3 gap-6 mt-14'>
 					{[
-						{ num: '12+', label: 'Premium Vehicles', icon: '🚗', color: 'rgba(47,164,169,0.12)', textColor: '#2FA4A9' },
-						{ num: '500+', label: 'Happy Travelers', icon: '😊', color: 'rgba(255,138,61,0.12)', textColor: '#FF8A3D' },
-						{ num: '4.8★', label: 'Google Rating', icon: '⭐', color: 'rgba(47,164,169,0.12)', textColor: '#2FA4A9' },
+						{ num: '12+', label: 'Premium Vehicles', icon: '🚗', color: 'rgba(47,164,169,0.12)', textColor: '#003366' },
+						{ num: '500+', label: 'Happy Travelers', icon: '😊', color: 'rgba(197,160,89,0.12)', textColor: '#C5A059' },
+						{ num: '4.8★', label: 'Google Rating', icon: '⭐', color: 'rgba(47,164,169,0.12)', textColor: '#003366' },
 					].map((stat) => (
 						<div key={stat.label} className='card-glass p-6 text-center'>
 							<div className='text-4xl mb-3'>{stat.icon}</div>
@@ -82,8 +82,8 @@ export default function About() {
 					<h3 className='text-2xl font-display font-bold mb-3' style={{ color: '#1A1A1A' }}>Ready to Explore?</h3>
 					<p className='mb-8' style={{ color: '#6B7280' }}>Start your Kashmir adventure with Miras today</p>
 					<div className='flex flex-col sm:flex-row gap-4 justify-center'>
-						<Link to='/cars' className='btn-cta px-7 py-3 justify-center'>Browse Our Fleet</Link>
-						<Link to='/contact' className='btn-ghost-white px-7 py-3 justify-center' style={{ background: 'rgba(47,164,169,0.12)', color: '#2FA4A9', borderColor: 'rgba(47,164,169,0.3)' }}>
+						<Link to='/cars' className='btn-blue px-7 py-3 justify-center'>Browse Our Fleet</Link>
+						<Link to='/contact' className='btn-ghost-white px-7 py-3 justify-center' style={{ background: 'rgba(47,164,169,0.12)', color: '#003366', borderColor: 'rgba(47,164,169,0.3)' }}>
 							Contact Us
 						</Link>
 					</div>

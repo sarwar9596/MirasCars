@@ -25,3 +25,8 @@ export const blogsAPI = {
 export const inquiriesAPI = {
 	create: (data) => api.post('/inquiries', data),
 };
+
+// ─── Settings ────────────────────────────────────────────────────────────────
+export const settingsAPI = {
+	get: () => api.get('/settings'),
+};

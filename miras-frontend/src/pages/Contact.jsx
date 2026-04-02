@@ -3,14 +3,17 @@ import { useSearchParams } from 'react-router-dom';
 import { inquiriesAPI } from '../utils/api';
 import { Mail, MapPin, Phone, MessageCircle, Send, Clock } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useSettings } from '../context/SettingsContext';
 
 export default function Contact() {
 	const [searchParams] = useSearchParams();
+	const { whatsapp } = useSettings();
 	const [form, setForm] = useState({
 		name: '', email: '', phone: '', carName: '',
 		pickupDate: '', dropoffDate: '', message: '',
 	});
 	const [loading, setLoading] = useState(false);
+	const [successUrl, setSuccessUrl] = useState('');
 
 	useEffect(() => {
 		const car = searchParams.get('car');
@@ -30,7 +33,9 @@ export default function Contact() {
 		}
 		setLoading(true);
 		try {
-			await inquiriesAPI.create({ ...form, source: 'contact' });
+			const res = await inquiriesAPI.create({ ...form, source: 'contact' });
+			const waUrl = res.data?.whatsappUrl;
+			setSuccessUrl(waUrl || `https://wa.me/${whatsapp}`);
 			toast.success("Inquiry sent! We'll contact you soon.");
 			setForm({ name: '', email: '', phone: '', carName: searchParams.get('car') || '', pickupDate: '', dropoffDate: '', message: '' });
 		} catch {
@@ -45,7 +50,7 @@ export default function Contact() {
 			{/* ── Header ──────────────────────────────── */}
 			<section
 				className='py-20 relative overflow-hidden'
-				style={{ background: 'linear-gradient(135deg, #2FA4A9 0%, #6BC1B7 45%, #F5E6CA 100%)' }}
+				style={{ background: 'linear-gradient(135deg, #003366 0%, #004080 100%)' }}
 			>
 				<div className='relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
 					<span className='section-label mb-3 block'>Get in Touch</span>
@@ -67,10 +72,10 @@ export default function Contact() {
 
 						<div className='space-y-6'>
 							{[
-								{ icon: Phone, label: 'Phone', value: '+91 9103489268', href: 'tel:+919103489268', iconColor: '#2FA4A9' },
-								{ icon: MessageCircle, label: 'WhatsApp', value: 'Chat instantly', href: 'https://wa.me/919103489268', iconColor: '#25D366' },
-								{ icon: Mail, label: 'Email', value: 'info@mirasrentals.com', href: 'mailto:info@mirasrentals.com', iconColor: '#2FA4A9' },
-								{ icon: MapPin, label: 'Location', value: 'Residency Road, Lal Chowk, Srinagar, J&K 190001', href: null, iconColor: '#2FA4A9' },
+								{ icon: Phone, label: 'Phone', value: '+91 9103489268', href: 'tel:+919103489268', iconColor: '#003366' },
+								{ icon: MessageCircle, label: 'WhatsApp', value: 'Chat instantly', href: `https://wa.me/${whatsapp}`, iconColor: '#25D366' },
+								{ icon: Mail, label: 'Email', value: 'info@mirasrentals.com', href: 'mailto:info@mirasrentals.com', iconColor: '#003366' },
+								{ icon: MapPin, label: 'Location', value: 'Residency Road, Lal Chowk, Srinagar, J&K 190001', href: null, iconColor: '#003366' },
 							].map(({ icon: Icon, label, value, href, iconColor }) => (
 								<div key={label} className='flex gap-4'>
 									<div className='mt-1' style={{ color: iconColor }}><Icon size={22} /></div>
@@ -92,12 +97,12 @@ export default function Contact() {
 						{/* WhatsApp tip */}
 						<div className='card-glass p-6' style={{ background: 'rgba(37,211,102,0.08)' }}>
 							<div className='flex items-center gap-2 mb-2'>
-								<Clock size={16} style={{ color: '#2FA4A9' }} />
-								<p className='font-bold text-sm' style={{ color: '#2FA4A9' }}>Quickest Response</p>
+								<Clock size={16} style={{ color: '#003366' }} />
+								<p className='font-bold text-sm' style={{ color: '#003366' }}>Quickest Response</p>
 							</div>
 							<p className='text-sm mb-4' style={{ color: '#6B7280' }}>For fastest replies, message us on WhatsApp. We typically respond within minutes.</p>
-							<a href='https://wa.me/919103489268' target='_blank' rel='noopener noreferrer'
-								className='inline-flex items-center gap-2 btn-cta text-sm px-5 py-2'>
+							<a href={`https://wa.me/${whatsapp}`} target='_blank' rel='noopener noreferrer'
+								className='inline-flex items-center gap-2 btn-blue text-sm px-5 py-2'>
 								💬 Chat on WhatsApp
 							</a>
 						</div>
@@ -123,7 +128,7 @@ export default function Contact() {
 						<div className='form-glass'>
 							<div className='flex items-center gap-3 mb-8'>
 								<div className='w-10 h-10 rounded-xl flex items-center justify-center' style={{ background: 'rgba(47,164,169,0.12)' }}>
-									<Send size={18} style={{ color: '#2FA4A9' }} />
+									<Send size={18} style={{ color: '#003366' }} />
 								</div>
 								<h2 className='font-display font-bold' style={{ fontSize: '1.4rem', color: '#1A1A1A' }}>Send an Inquiry</h2>
 							</div>
@@ -170,7 +175,7 @@ export default function Contact() {
 										rows={5} className='input-glass resize-none' />
 								</div>
 								<button type='submit' disabled={loading}
-									className='btn-cta w-full py-3.5 text-base justify-center'>
+									className='btn-blue w-full py-3.5 text-base justify-center'>
 									{loading ? (
 										<><div className='w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin' />Sending…</>
 									) : (
@@ -179,6 +184,17 @@ export default function Contact() {
 								</button>
 								<p className='text-xs text-center' style={{ color: '#6B7280' }}>We respond to all inquiries within 2 hours during business hours</p>
 							</form>
+							{successUrl && (
+								<div className='mt-5 p-4 rounded-xl text-center' style={{ background: 'rgba(37,211,102,0.1)', border: '1px solid rgba(37,211,102,0.25)' }}>
+									<p className='text-sm font-semibold mb-2' style={{ color: '#25D366' }}>Also reach us instantly on WhatsApp</p>
+									<a href={successUrl} target='_blank' rel='noopener noreferrer'
+										className='inline-flex items-center gap-2 text-sm font-medium px-5 py-2 rounded-full transition-all'
+										style={{ background: '#25D366', color: 'white' }}>
+										💬 Open WhatsApp with Your Details
+									</a>
+									<button onClick={() => setSuccessUrl('')} className='block mx-auto mt-2 text-xs' style={{ color: '#6B7280' }}>Dismiss</button>
+								</div>
+							)}
 						</div>
 					</div>
 				</div>

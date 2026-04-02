@@ -4,15 +4,19 @@ export default {
   theme: {
     extend: {
       colors: {
-        // New modern palette
-        'miras-teal':    '#2FA4A9',
-        'miras-teal-light': '#6BC1B7',
-        'miras-cream':   '#F5E6CA',
-        'miras-orange':  '#FF8A3D',
-        'miras-gold':    '#F2994A',
-        'miras-dark':    '#1A1A1A',
-        'miras-muted':   '#6B7280',
-        'miras-light':   '#F8F9FA',
+        // New deep blue + champagne gold palette
+        'miras-blue':      '#003366',
+        'miras-blue-mid':  '#004080',
+        'miras-blue-light':'#0055AA',
+        'miras-gold':      '#C5A059',
+        'miras-gold-light':'#D4B06A',
+        'miras-dark':      '#1A1A1A',
+        'miras-muted':     '#6B7280',
+        'miras-light':     '#F8F9FA',
+        'miras-offwhite':  '#E5E5E5',
+        'miras-cream':     '#F5F5DC',
+        'miras-white':     '#FFFFFF',
+        'miras-nav-link':  '#D1D1D1',
       },
       fontFamily: {
         sans: ['Inter', 'Poppins', 'sans-serif'],
@@ -20,11 +24,9 @@ export default {
       },
       backgroundImage: {
         'hero-pattern': "url('/hero.jpeg')",
-        'gradient-miras': 'linear-gradient(135deg, #2FA4A9 0%, #6BC1B7 45%, #F5E6CA 100%)',
-        'gradient-cta': 'linear-gradient(135deg, #FF8A3D, #F2994A)',
-      },
-      backgroundSize: {
-        '200': '200% 200%',
+        'gradient-blue':  'linear-gradient(135deg, #003366 0%, #004080 50%, #003366 100%)',
+        'gradient-gold':  'linear-gradient(135deg, #C5A059, #D4B06A)',
+        'gradient-hero':  'linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.6))',
       },
       keyframes: {
         gradientShift: {

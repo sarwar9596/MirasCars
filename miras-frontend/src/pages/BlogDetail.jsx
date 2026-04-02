@@ -38,7 +38,7 @@ export default function BlogDetail() {
 	if (loading) {
 		return (
 			<div className='min-h-screen flex items-center justify-center' style={{ background: '#F8F9FA' }}>
-				<div className='w-12 h-12 border-4 rounded-full animate-spin' style={{ borderColor: 'rgba(47,164,169,0.2)', borderTopColor: '#2FA4A9' }} />
+				<div className='w-12 h-12 border-4 rounded-full animate-spin' style={{ borderColor: 'rgba(47,164,169,0.2)', borderTopColor: '#003366' }} />
 			</div>
 		);
 	}
@@ -48,7 +48,7 @@ export default function BlogDetail() {
 	return (
 		<div>
 			{/* ── Header ──────────────────────────────── */}
-			<section className='py-20 relative overflow-hidden' style={{ background: 'linear-gradient(135deg, #2FA4A9 0%, #6BC1B7 45%, #F5E6CA 100%)' }}>
+			<section className='py-20 relative overflow-hidden' style={{ background: 'linear-gradient(135deg, #003366 0%, #004080 100%)' }}>
 				<div className='absolute bottom-0 left-0 w-full'>
 					<svg viewBox='0 0 1440 80' fill='none' xmlns='http://www.w3.org/2000/svg' className='w-full' preserveAspectRatio='none' style={{ height: '70px' }}>
 						<path d='M0,40 C320,80 640,10 960,45 C1200,65 1380,30 1440,25 L1440,80 L0,80 Z' fill='white' />
@@ -84,7 +84,7 @@ export default function BlogDetail() {
 				<div className='mb-8'>
 					<h1 className='font-display font-bold mb-4' style={{ fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', color: '#1A1A1A' }}>{blog.title}</h1>
 					{blog.excerpt && (
-						<p className='text-lg italic leading-relaxed pl-4' style={{ color: '#6B7280', borderLeft: '4px solid #FF8A3D' }}>
+						<p className='text-lg italic leading-relaxed pl-4' style={{ color: '#6B7280', borderLeft: '4px solid #C5A059' }}>
 							{blog.excerpt}
 						</p>
 					)}
@@ -121,7 +121,7 @@ export default function BlogDetail() {
 						Ready to Explore Kashmir?
 					</h3>
 					<p className='mb-8' style={{ color: '#6B7280' }}>Book your perfect car today and experience the valley with Miras</p>
-					<Link to='/cars' className='btn-cta px-7 py-3 justify-center'>View Our Fleet</Link>
+					<Link to='/cars' className='btn-blue px-7 py-3 justify-center'>View Our Fleet</Link>
 				</div>
 
 				{/* Related Cars */}
@@ -141,7 +141,7 @@ export default function BlogDetail() {
 										<h3 className='font-bold mb-1' style={{ color: '#1A1A1A' }}>{car.name}</h3>
 										<p className='text-xs font-semibold mb-2' style={{ color: '#6B7280' }}>{car.category}</p>
 										<div className='flex items-baseline gap-1'>
-											<span className='text-lg font-extrabold' style={{ background: 'linear-gradient(135deg, #FF8A3D, #F2994A)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>₹{car.pricePerDay?.toLocaleString()}</span>
+											<span className='text-lg font-extrabold' style={{ background: 'linear-gradient(135deg, #C5A059, #D4B06A)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>₹{car.pricePerDay?.toLocaleString()}</span>
 											<span className='text-xs' style={{ color: '#6B7280' }}>/day</span>
 										</div>
 									</div>
@@ -175,7 +175,7 @@ export default function BlogDetail() {
 										<span className='tag mb-2'>{b.category || 'Travel'}</span>
 										<h3 className='text-base font-bold mb-2 line-clamp-2' style={{ color: '#1A1A1A' }}>{b.title}</h3>
 										<p className='text-xs line-clamp-2 mb-3' style={{ color: '#6B7280' }}>{b.excerpt}</p>
-										<span className='text-xs font-semibold' style={{ color: '#FF8A3D' }}>Read Article →</span>
+										<span className='text-xs font-semibold' style={{ color: '#C5A059' }}>Read Article →</span>
 									</div>
 								</Link>
 							))}

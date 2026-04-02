@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 
 const SiteSettingsSchema = new mongoose.Schema({
   phone:         { type: String, default: '+91 98765 43210' },
-  whatsapp:      { type: String, default: '919876543210' },
+  whatsapp:      { type: String, default: '919103489268' },
   email:         { type: String, default: 'info@mirascarrental.com' },
   address:       { type: String, default: 'Lal Chowk, Srinagar, Kashmir - 190001' },
   socialLinks: {
